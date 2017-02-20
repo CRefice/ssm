@@ -59,7 +59,7 @@ inline quat& quat::operator-=(const quat& rhs) {
 }
 
 inline quat& quat::operator*=(const quat& rhs) {
-	const f128 axyzx = sse_shuffle<0, 0, 0, 0>(vec_data);
+	const f128 axyzx = sse_shuffle<3, 1, 2, 3>(vec_data);
 	const f128 ayzxy = sse_shuffle<2, 3, 1, 2>(vec_data);
 	const f128 bwwwx = sse_shuffle<3, 0, 0, 0>(rhs.vec_data);
 	const f128 bzxyy = sse_shuffle<2, 2, 3, 1>(rhs.vec_data);

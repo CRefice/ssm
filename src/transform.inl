@@ -67,10 +67,10 @@ inline mat4 scale_matrix(const vec3& scale) {
 inline vec4 operator*(const mat4& mat, const vec4& vec) {
 	const f128 v0 = vec.vec_data;
 
-	f128 vx = sse_shuffle<0xff>(v0);
-	f128 vy = sse_shuffle<0xaa>(v0);
-	f128 vz = sse_shuffle<0x55>(v0);
-	f128 vw = sse_shuffle<0x00>(v0);
+	f128 vx = sse_shuffle<3, 3, 3, 3>(v0);
+	f128 vy = sse_shuffle<2, 2, 2, 2>(v0);
+	f128 vz = sse_shuffle<1, 1, 1, 1>(v0);
+	f128 vw = sse_shuffle<0, 0, 0, 0>(v0);
 
 	vx = sse_mul(vx, mat[0].vec_data);
 	vy = sse_mul(vy, mat[1].vec_data);
@@ -105,27 +105,27 @@ inline void batch_transform(const mat4& mat, vec4* vin, vec4* vout, int count) {
 		sse_prefetch(vin + 0x30);
 		sse_prefetch(vout + 0x30);
 
-		f128 x1 = sse_shuffle<0, 0, 0, 0>(v1);
-		f128 x2 = sse_shuffle<0, 0, 0, 0>(v2);
+		f128 x1 = sse_shuffle<3, 3, 3, 3>(v1);
+		f128 x2 = sse_shuffle<3, 3, 3, 3>(v2);
 		x1 = sse_mul(x1, m1);
 		x2 = sse_mul(x2, m1);
 
-		f128 y1 = sse_shuffle<1, 1, 1, 1>(v1);
-		f128 y2 = sse_shuffle<1, 1, 1, 1>(v2);
+		f128 y1 = sse_shuffle<2, 2, 2, 2>(v1);
+		f128 y2 = sse_shuffle<2, 2, 2, 2>(v2);
 		y1 = sse_mul(y1, m2);
 		y2 = sse_mul(y2, m2);
 		tot1 = sse_add(x1, y1);
 		tot2 = sse_add(x2, y2);
 
-		f128 z1 = sse_shuffle<2, 2, 2, 2>(v1);
-		f128 z2 = sse_shuffle<2, 2, 2, 2>(v2);
+		f128 z1 = sse_shuffle<1, 1, 1, 1>(v1);
+		f128 z2 = sse_shuffle<1, 1, 1, 1>(v2);
 		z1 = sse_mul(z1, m3);
 		z2 = sse_mul(z2, m3);
 		tot1 = sse_add(tot1, z1);
 		tot2 = sse_add(tot2, z2);
 
-		f128 w1 = sse_shuffle<3, 3, 3, 3>(v1);
-		f128 w2 = sse_shuffle<3, 3, 3, 3>(v2);
+		f128 w1 = sse_shuffle<0, 0, 0, 0>(v1);
+		f128 w2 = sse_shuffle<0, 0, 0, 0>(v2);
 		w1 = sse_mul(w1, m4);
 		w2 = sse_mul(w2, m4);
 		tot1 = sse_add(tot1, w1);
