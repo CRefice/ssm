@@ -8,7 +8,7 @@
 namespace ssm
 {
 inline quat::quat() : vec_data(sse_load(0)) {}
-inline quat::quat(float w, float x, float y, float z) : vec_data(sse_load(w, z, y, x)) {}
+inline quat::quat(float x, float y, float z, float w) : vec_data(sse_load(w, z, y, x)) {}
 inline quat::quat(const vec3& axis, const float angle) {
 	const float halfang = angle / 2;
 	const float halfsin = std::sin(halfsin); 
