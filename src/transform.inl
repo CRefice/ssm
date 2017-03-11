@@ -55,12 +55,23 @@ inline mat4 rotation_matrix(const quat& rot) {
 }
 
 inline mat4 scale_matrix(const vec3& scale) {
-	f128 cols[4];
-	cols[0] = sse_load(0.f, 0.f, 0.f, scale.x);
-	cols[1] = sse_load(0.f, 0.f, scale.y, 0.f);
-	cols[2] = sse_load(0.f, scale.z, 0.f, 0.f);
-	cols[3] = sse_load(1.f, 0.f, 0.f, 0.f);
-	return mat4(cols);
+	mat4 retval;
+	retval[0].vec_data = sse_load(0.f, 0.f, 0.f, scale.x);
+	retval[1].vec_data = sse_load(0.f, 0.f, scale.y, 0.f);
+	retval[2].vec_data = sse_load(0.f, scale.z, 0.f, 0.f);
+	return retval;
+}
+
+inline mat4 projection_matrix(float width, float height, float near, float far) {
+	const float right = width / 2;
+	const float top = height / 2;
+
+	mat4 retval;
+	retval[0].vec_data = sse_load(0.f, 0.f, 0.f, near / right);
+	retval[1].vec_data = sse_load(0.f, 0.f, near / top, 0.f);
+	retval[2].vec_data = sse_load(-1.f, -(far + near) / (far - near), 0.f, 0.f);
+	retval[3].vec_data = sse_load(0.f, -2 * (far * near) / (far - near), 0.f, 0.f);
+	return retval;
 }
 
 //It's like writing assembly...
