@@ -1,17 +1,19 @@
+#include <cmath>
+
 #include "intrin\loads.hpp"
 #include "intrin\geometric.hpp"
 #include "intrin\cache.hpp"
 
 namespace ssm
 {
-inline mat4 translation_matrix(const vec3& pos) {
+inline mat4 translate(const vec3& pos) {
 	mat4 retval;
 	const f128 col3 = sse_add(retval[3].vec_data, pos.vec_data);
 	retval[3].vec_data = col3;
 	return retval;
 }
 
-inline mat4 rotation_matrix(const quat& rot) {
+inline mat4 rotate(const quat& rot) {
 	mat4 result;
 
 	const f128 wwww = sse_shuffle<3, 3, 3, 3>(rot.vec_data);
@@ -54,7 +56,7 @@ inline mat4 rotation_matrix(const quat& rot) {
 	return result;
 }
 
-inline mat4 scale_matrix(const vec3& scale) {
+inline mat4 scale(const vec3& scale) {
 	mat4 retval;
 	retval[0].vec_data = sse_load(0.f, 0.f, 0.f, scale.x);
 	retval[1].vec_data = sse_load(0.f, 0.f, scale.y, 0.f);
@@ -62,15 +64,14 @@ inline mat4 scale_matrix(const vec3& scale) {
 	return retval;
 }
 
-inline mat4 projection_matrix(float width, float height, float near, float far) {
-	const float right = width / 2;
-	const float top = height / 2;
+inline mat4 project(float fovy, float aspect, float znear, float zfar) {
+	const float halftan = std::tan(fovy / 2.f);
 
 	mat4 retval;
-	retval[0].vec_data = sse_load(0.f, 0.f, 0.f, near / right);
-	retval[1].vec_data = sse_load(0.f, 0.f, near / top, 0.f);
-	retval[2].vec_data = sse_load(-1.f, -(far + near) / (far - near), 0.f, 0.f);
-	retval[3].vec_data = sse_load(0.f, -2 * (far * near) / (far - near), 0.f, 0.f);
+	retval[0].vec_data = sse_load(0.f, 0.f, 0.f, 1.f / aspect * halftan);
+	retval[1].vec_data = sse_load(0.f, 0.f, 1.f / halftan, 0.f);
+	retval[2].vec_data = sse_load(-1.f, -(zfar + znear) / (zfar - znear), 0.f, 0.f);
+	retval[3].vec_data = sse_load(0.f, -2 * (zfar * znear) / (zfar - znear), 0.f, 0.f);
 	return retval;
 }
 
@@ -99,7 +100,7 @@ inline mat4 operator*(const mat4& lhs, const mat4& rhs) {
 	return retval;
 }
 
-inline void batch_transform(const mat4& mat, vec4* vin, vec4* vout, int count) {
+inline void batch_transform(const mat4& mat, vec4* vin, vec4* vout, unsigned count) {
 	const f128 m1 = mat[0].vec_data;
 	const f128 m2 = mat[1].vec_data;
 	const f128 m3 = mat[2].vec_data;

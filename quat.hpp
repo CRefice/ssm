@@ -14,12 +14,15 @@ struct alignas(16) quat
 
 	quat();
 	quat(float x, float y, float z, float w);
+	explicit quat(f128 data);
 	quat(const vec3& axis, const float angle);
-
+	
 	quat& normalize();
 
 	float magnitude() const;
 	float dot(const quat& rhs) const;
+
+	quat conjugate() const;
 
 	float* data();
 	const float* data() const;

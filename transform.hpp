@@ -6,10 +6,10 @@
 
 namespace ssm
 {
-mat4 translation_matrix(const vec3& pos);
-mat4 rotation_matrix(const quat& rot);
-mat4 scale_matrix(const vec3& scale);
-mat4 projection_matrix(float near, float far, float width, float height);
+mat4 translate(const vec3& pos);
+mat4 rotate(const quat& rot);
+mat4 scale(const vec3& scale);
+mat4 project(float fovy, float aspect, float znear, float zfar);
 
 //Not sure if I should define these in mat4.hpp
 vec4 operator*(const mat4& mat, const vec4& vec);
