@@ -64,7 +64,7 @@ inline mat4 scale(const vec3& scale) {
 	return retval;
 }
 
-inline mat4 project(float fovy, float aspect, float znear, float zfar) {
+inline mat4 perspective(float fovy, float aspect, float znear, float zfar) {
 	const float halftan = std::tan(fovy / 2.f);
 
 	mat4 retval;

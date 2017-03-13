@@ -9,7 +9,7 @@ namespace ssm
 mat4 translate(const vec3& pos);
 mat4 rotate(const quat& rot);
 mat4 scale(const vec3& scale);
-mat4 project(float fovy, float aspect, float znear, float zfar);
+mat4 perspective(float fovy, float aspect, float znear, float zfar);
 
 //Not sure if I should define these in mat4.hpp
 vec4 operator*(const mat4& mat, const vec4& vec);
