@@ -67,12 +67,25 @@ inline mat4 scale(const vec3& scale) {
 inline mat4 perspective(float fovy, float aspect, float znear, float zfar) {
 	const float halftan = std::tan(fovy / 2.f);
 
-	mat4 retval;
-	retval[0].vec_data = sse_load(0.f, 0.f, 0.f, 1.f / aspect * halftan);
-	retval[1].vec_data = sse_load(0.f, 0.f, 1.f / halftan, 0.f);
-	retval[2].vec_data = sse_load(-1.f, -(zfar + znear) / (zfar - znear), 0.f, 0.f);
-	retval[3].vec_data = sse_load(0.f, -2 * (zfar * znear) / (zfar - znear), 0.f, 0.f);
-	return retval;
+	f128 vecs[4];
+	vecs[0] = sse_load(0.f, 0.f, 0.f, 1.f / aspect * halftan);
+	vecs[1] = sse_load(0.f, 0.f, 1.f / halftan, 0.f);
+	vecs[2] = sse_load(-1.f, -(zfar + znear) / (zfar - znear), 0.f, 0.f);
+	vecs[3] = sse_load(0.f, -2 * (zfar * znear) / (zfar - znear), 0.f, 0.f);
+	return mat4(vecs);
+}
+
+inline mat4 look_at(const vec3& eye, const vec3& target, const vec3& up) {
+	const vec3 f = normalize(eye - target);
+	const vec3 s = normalize(cross(up, f));
+	const vec3 u = cross(f, s);
+
+	f128 vecs[4];
+	vecs[0] = sse_load(s.x, u.x, f.x, 0.f);
+	vecs[1] = sse_load(s.y, u.y, f.y, 0.f);
+	vecs[2] = sse_load(s.z, u.z, f.z, 0.f);
+	vecs[3] = sse_load(-dot(s, eye), -dot(u,eye), -dot(f, eye), 1.f);
+	return mat4(vecs);
 }
 
 //It's like writing assembly...
