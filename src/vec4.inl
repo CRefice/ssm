@@ -11,24 +11,15 @@ inline vec4::vec4(float val) : vec_data(sse_load_broad(val)) {}
 inline vec4::vec4(f128 data) : vec_data(data) {}
 
 inline vec4& vec4::normalize() {
-	const f128 length = sse_length(vec_data);
-	vec_data = sse_div(vec_data, length);
+	const f128 dot0 = sse_dot(vec_data, vec_data);
+	const f128 rsqrt = sse_rsqrt(dot0);
+	vec_data = sse_mul(vec_data, rsqrt);
 	return *this;
 }
 
 inline float vec4::length() const {
 	const f128 lngt = sse_length(vec_data);
 	return sse_to_float(lngt);
-}
-
-inline float vec4::dot(const vec4& rhs) const {
-	const f128 dot0 = sse_dot(vec_data, rhs.vec_data);
-	return sse_to_float(dot0);
-}
-
-inline vec4 vec4::cross(const vec4& rhs) const {
-	const f128 vals = sse_cross(vec_data, rhs.vec_data);
-	return vec4(vals);
 }
 
 inline float* vec4::data() {
@@ -94,6 +85,20 @@ inline vec4& vec4::operator*=(float scale) {
 
 inline vec4::operator vec3() {
 	return vec3(vec_data);
+}
+
+inline float dot(const vec4& lhs, const vec4& rhs) {
+	const f128 dot0 = sse_dot(lhs.vec_data, rhs.vec_data);
+	return sse_to_float(dot0);
+}
+
+inline vec4 cross(const vec4& lhs, const vec4& rhs) {
+	const f128 crss = sse_cross(lhs.vec_data, rhs.vec_data);
+	return vec4(crss);
+}
+
+inline vec4 normalize(vec4 vec) {
+	return vec.normalize();
 }
 
 inline vec4 operator+(vec4 lhs, const vec4& rhs) {

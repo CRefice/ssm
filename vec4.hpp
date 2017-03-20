@@ -20,11 +20,7 @@ struct alignas(16) vec4
 	explicit vec4(f128 data);
 
 	vec4& normalize();
-
 	float length() const;
-	
-	float dot(const vec4& rhs) const;
-	vec4 cross(const vec4& rhs) const;
 
 	float* data();
 	float* begin();
@@ -44,8 +40,12 @@ struct alignas(16) vec4
 	vec4& operator*=(const vec4& rhs);
 	vec4& operator*=(float scale);
 
-	operator vec3();
+	explicit operator vec3();
 };
+
+float dot(const vec4& lhs, const vec4& rhs);
+vec4 cross(const vec4& lhs, const vec4& rhs);
+vec4 normalize(vec4 vec);
 
 vec4 operator+(vec4 lhs, const vec4& rhs);
 vec4 operator-(vec4 lhs, const vec4& rhs);

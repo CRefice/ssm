@@ -19,12 +19,8 @@ struct alignas(16) vec3
 	explicit vec3(f128 vals);
 
 	vec3& normalize();
-
 	float length() const;
 	
-	float dot(const vec3& rhs) const;
-	vec3 cross(const vec3& rhs) const;
-
 	float* data();
 	float* begin();
 	float* end();
@@ -43,6 +39,10 @@ struct alignas(16) vec3
 	vec3& operator*=(const vec3& rhs);
 	vec3& operator*=(float scale);
 };
+
+float dot(const vec3& lhs, const vec3& rhs);
+vec3 cross(const vec3& lhs, const vec3& rhs);
+vec3 normalize(vec3 vec);
 
 vec3 operator+(vec3 lhs, const vec3& rhs);
 vec3 operator-(vec3 lhs, const vec3& rhs);

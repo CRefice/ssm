@@ -22,8 +22,9 @@ inline quat::quat(const vec3& axis, const float angle) {
 }
 
 inline quat& quat::normalize() {
-	const f128 lngt = sse_length(vec_data);
-	vec_data = sse_div(vec_data, lngt);
+	const f128 dot0 = sse_dot(vec_data, vec_data);
+	const f128 rsqrt = sse_rsqrt(dot0);
+	vec_data = sse_mul(vec_data, rsqrt);
 	return *this;
 }
 
