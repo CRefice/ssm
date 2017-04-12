@@ -15,6 +15,7 @@ struct alignas(16) vec4
 
 	vec4();
 	vec4(float x, float y, float z, float w);
+	vec4(const vec2& vec, float z, float w);
 	vec4(const vec3& vec, float w);
 	explicit vec4(float val);
 	explicit vec4(f128 data);

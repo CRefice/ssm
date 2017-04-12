@@ -1,6 +1,7 @@
 #pragma once
 
 #include "arch.hpp"
+#include "vec2.hpp"
 
 namespace ssm
 {
@@ -15,6 +16,7 @@ struct alignas(16) vec3
 
 	vec3();
 	vec3(float x, float y, float z);
+	vec3(const vec2& vec, float z);
 	explicit vec3(float val);
 	explicit vec3(f128 vals);
 

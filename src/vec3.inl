@@ -7,6 +7,7 @@ namespace ssm
 {
 inline vec3::vec3() : vec_data(sse_load(0.f)) {}
 inline vec3::vec3(float x, float y, float z) : vec_data(sse_load(0.f, z, y, x)) {}
+inline vec3::vec3(const vec2& vec, float z) : vec_data(sse_load(0.f, z, vec.x, vec.y)) {}
 inline vec3::vec3(float val) : vec_data(sse_load(0.f, val, val, val)) {}
 inline vec3::vec3(f128 vals) {
 	const __m128i mask =_mm_set_epi32(0, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF);

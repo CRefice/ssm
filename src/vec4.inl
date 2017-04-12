@@ -6,6 +6,7 @@ namespace ssm
 {
 inline vec4::vec4() : vec_data(sse_load(0.f)) {}
 inline vec4::vec4(float x, float y, float z, float w) : vec_data(sse_load(w, z, y, x)) {}
+inline vec4::vec4(const vec2& vec, float z, float w) : vec_data(sse_load(w, z, vec.y, vec.x)) {}
 inline vec4::vec4(const vec3& vec, float w) : vec_data(sse_load(w, vec.z, vec.y, vec.x)) {}
 inline vec4::vec4(float val) : vec_data(sse_load_broad(val)) {}
 inline vec4::vec4(f128 data) : vec_data(data) {}
