@@ -1,15 +1,14 @@
 #pragma once
 
 #include "detail/setup.hpp"
-#include "simd/traits.hpp"
-#include "vector-data.hpp"
+#include "detail/vector-manip.hpp"
 
 namespace ssm
 {
-template <typename T, size_t N>
-struct tvecn : vector_data<T, N>
+template <typename T, int N>
+struct vector : detail::vector_data<T, N>
 {
-	using vector_data<T, N>::vector_data;
+	using vector_data::vector_data;
 
 	const T& operator[](size_t index) const {
 		assert(index < N);
@@ -21,11 +20,11 @@ struct tvecn : vector_data<T, N>
 	}
 };
 
-template <typename T, size_t N>
-struct tnormn : vector_data<T, N>
+template <typename T, int N>
+struct normal : detail::vector_data<T, N>
 {
-	using vector_data<T, N>::vector_data;
-	operator tvecn<T, N>() const { return tvecn<T, N>(data); }
+	using vector_data::vector_data;
+	operator vector<T, N>() const { return vector<T, N>(data); }
 
 	const T& operator[](size_t index) const {
 		assert(index < N);
@@ -37,148 +36,134 @@ struct tnormn : vector_data<T, N>
 	}
 };
 
-#include "detail/vector.inl"
-
-template <typename T, size_t N>
-inline T dot(const tvecn<T, N>& a, const tvecn<T, N>& b) {
+template <typename T, int N>
+inline T dot(const vector<T, N>& a, const vector<T, N>& b) {
 	return detail::vec_impl<T, N>::dot(a, b);
 }
 
-template <typename T, size_t N>
-inline T sqlength(const tvecn<T, N>& vec) {
+template <typename T, int N>
+inline T sqlength(const vector<T, N>& vec) {
 	return dot(vec, vec);
 }
 
-template <typename T, size_t N>
-inline T length(const tvecn<T, N>& vec) {
-	return T{std::sqrt(sqlength(vec))};
+template <typename T, int N>
+inline T length(const vector<T, N>& vec) {
+	return static_cast<T>(std::sqrt(sqlength(vec)));
+}
+
+template <typename T, int N>
+inline vector<T, N> cross(const vector<T, N>& a, const vector<T, N>& b) {
+	static_assert(N == 3, "Cross product is only defined for 3D vector<T, N>s");
+	return vector<T, N>(
+			a.y * b.z - a.z * b.y,
+			a.z * b.x - a.x * b.z,
+			a.x * b.y - a.y * b.x
+			);
+}
+
+template <typename T, int N>
+inline normal<T, N> cross(const normal<T, N>& a, const normal<T, N>& b) {
+	static_assert(N == 3, "Cross product is only defined for 3D vector<T, N>s");
+	return normal<T, N>(
+			a.y * b.z - a.z * b.y,
+			a.z * b.x - a.x * b.z,
+			a.x * b.y - a.y * b.x
+			);
 }
 
 template <typename T, size_t N>
-inline tnormn<T, N> normalize(const tvecn<T, N>& vec) {
-	return detail::vec_impl<T, N>::normalize(vec);
+inline normal<T, N> normalize(const vector<T, N>& vec) {
+	normal<T, N> norm(vec.data);
+	detail::vec_impl<T, N>::normalize(norm);
+	return norm;
 }
 
-template <typename T, size_t N>
-inline tvecn<T, N> cross(const tvecn<T, N>& a, const tvecn<T, N>& b) {
-	static_assert(N == 3, "Cross product is only defined for 3D vectors");
-	return tvecn<T, N>(
-		a.y * b.z - a.z * b.y,
-		a.z * b.x - a.x * b.z,
-		a.x * b.y - a.y * b.x
-	);
+template <typename T, int N>
+inline vector<T, N>& operator+=(vector<T, N>& a, const vector<T, N>& b) {
+	detail::vec_impl<T, N>::add(a, b);
+	return a;
+}
+template <typename T, int N>
+inline vector<T, N>& operator-=(vector<T, N>& a, const vector<T, N>& b) {
+	detail::vec_impl<T, N>::sub(a, b);
+	return a;
+}
+template <typename T, int N>
+inline vector<T, N>& operator*=(vector<T, N>& a, const vector<T, N>& b) {
+	detail::vec_impl<T, N>::mul(a, b);
+	return a;
+}
+template <typename T, int N>
+inline vector<T, N>& operator/=(vector<T, N>& a, const vector<T, N>& b) {
+	detail::vec_impl<T, N>::div(a, b);
+	return a;
 }
 
-template <typename T, size_t N>
-inline tnormn<T, N> cross(const tnormn<T, N>& a, const tnormn<T, N>& b) {
-	static_assert(N == 3, "Cross product is only defined for 3D vectors");
-	return tnormn<T, N>(
-		a.y * b.z - a.z * b.y,
-		a.z * b.x - a.x * b.z,
-		a.x * b.y - a.y * b.x
-	);
+template <typename T, int N>
+inline vector<T, N> operator+(vector<T, N> a, const vector<T, N>& b) {return a += b;}
+template <typename T, int N>
+inline vector<T, N> operator-(vector<T, N> a, const vector<T, N>& b) {return a -= b;}
+template <typename T, int N>
+inline vector<T, N> operator*(vector<T, N> a, const vector<T, N>& b) {return a *= b;}
+template <typename T, int N>
+inline vector<T, N> operator/(vector<T, N> a, const vector<T, N>& b) {return a /= b;}
+
+template <typename T, int N>
+inline vector<T, N> operator-(vector<T, N> vec) {
+	detail::vec_impl<T, N>::negate(vec);
+	return vec;
 }
 
-template <typename T, size_t N>
-inline tvecn<T, N>& operator+=(tvecn<T, N>& a, const tvecn<T, N>& b) {
-	return detail::vec_impl<T, N>::add(a, b);
+template <typename T, int N>
+inline normal<T, N> operator-(normal<T, N> vec) {
+	detail::vec_impl<T, N>::negate(vec);
+	return vec;
 }
 
-template <typename T, size_t N>
-inline tvecn<T, N>& operator-=(tvecn<T, N>& a, const tvecn<T, N>& b) {
-	return detail::vec_impl<T, N>::sub(a, b);
-}
-
-template <typename T, size_t N>
-inline tvecn<T, N>& operator*=(tvecn<T, N>& a, const tvecn<T, N>& b) {
-	return detail::vec_impl<T, N>::mul(a, b);
-}
-
-template <typename T, size_t N>
-inline tvecn<T, N>& operator*=(tvecn<T, N>& a, T b) {
-	return detail::vec_impl<T, N>::mul(a, b);
-}
-
-template <typename T, size_t N>
-inline tvecn<T, N>& operator/=(tvecn<T, N>& a, const tvecn<T, N>& b) {
-	return detail::vec_impl<T, N>::div(a, b);
-}
-
-template <typename T, size_t N>
-inline tvecn<T, N>& operator/=(tvecn<T, N>& a, T b) {
-	return detail::vec_impl<T, N>::div(a, b);
-}
-
-template <typename T, size_t N>
-inline tvecn<T, N> operator+(tvecn<T, N> a, const tvecn<T, N>& b) { return a += b; }
-template <typename T, size_t N>
-inline tvecn<T, N> operator-(tvecn<T, N> a, const tvecn<T, N>& b) { return a -= b; }
-template <typename T, size_t N>
-inline tvecn<T, N> operator*(tvecn<T, N> a, const tvecn<T, N>& b) { return a *= b; }
-template <typename T, size_t N>
-inline tvecn<T, N> operator*(tvecn<T, N> a, T b) { return a *= b; }
-template <typename T, size_t N>
-inline tvecn<T, N> operator/(tvecn<T, N> a, const tvecn<T, N>& b) { return a /= b; }
-
-template <typename T, size_t N>
-inline tvecn<T, N> operator-(const tvecn<T, N>& vec) {
-	return detail::vec_impl<T, N>::negate(vec);
-}
-
-template <typename T, size_t N>
-inline tnormn<T, N> operator-(const tnormn<T, N>& vec) {
-	return tnormn<T, N>(detail::vec_impl<T, N>::negate(vec).data);
-}
-
-template <typename T, size_t N>
-inline bool operator==(const tvecn<T, N>& a, const tvecn<T, N>& b) {
+template <typename T, int N>
+inline bool operator==(const vector<T, N>& a, const vector<T, N>& b) {
 	return detail::vec_impl<T, N>::cmp_eq(a, b);
 }
 
-template <typename T, size_t N>
-inline bool operator!=(const tvecn<T, N>& a, const tvecn<T, N>& b) {
+template <typename T, int N>
+inline bool operator!=(const vector<T, N>& a, const vector<T, N>& b) {
 	return !(a == b);
 }
 
-template <typename T, size_t N>
-inline const T* data_ptr(const tvecn<T, N>& a) { return &(a.data[0]); }
-template <typename T, size_t N>
-inline const T* begin(const tvecn<T, N>& a) { return data_ptr(a); }
-template <typename T, size_t N>
-inline const T* end(const tvecn<T, N>& a) { return begin(a) + N; }
+template <typename T, int N>
+inline const T* data_ptr(const vector<T, N>& a) { return &(a.data[0]); }
+template <typename T, int N>
+inline const T* begin(const vector<T, N>& a) { return data_ptr(a); }
+template <typename T, int N>
+inline const T* end(const vector<T, N>& a) { return begin(a) + N; }
 
-template <typename T, size_t N>
-inline T* data_ptr(tvecn<T, N>& a) { return &(a.data[0]); }
-template <typename T, size_t N>
-inline T* begin(tvecn<T, N>& a) { return data_ptr(a); }
-template <typename T, size_t N>
-inline T* end(tvecn<T, N>& a) { return begin(a) + N; }
+template <typename T, int N>
+inline T* data_ptr(vector<T, N>& a) { return &(a.data[0]); }
+template <typename T, int N>
+inline T* begin(vector<T, N>& a) { return data_ptr(a); }
+template <typename T, int N>
+inline T* end(vector<T, N>& a) { return begin(a) + N; }
 
 //----------------------------------------------
 // Utility typedefs
 //----------------------------------------------
-template <typename T, size_t N>
-using vector = tvecn<T, N>;
-template <typename T, size_t N>
-using normal = tvecn<T, N>;
+using ivec2 = vector<int, 2>;
+using ivec3 = vector<int, 3>;
+using ivec4 = vector<int, 4>;
+using vec2 = vector<float, 2>;
+using vec3 = vector<float, 3>;
+using vec4 = vector<float, 4>;
+using dvec2 = vector<double, 2>;
+using dvec3 = vector<double, 3>;
+using dvec4 = vector<double, 4>;
 
-using ivec2 = tvecn<int, 2>;
-using ivec3 = tvecn<int, 3>;
-using ivec4 = tvecn<int, 4>;
-using vec2 = tvecn<float, 2>;
-using vec3 = tvecn<float, 3>;
-using vec4 = tvecn<float, 4>;
-using dvec2 = tvecn<double, 2>;
-using dvec3 = tvecn<double, 3>;
-using dvec4 = tvecn<double, 4>;
-
-using inorm2 = tnormn<int, 2>;
-using inorm3 = tnormn<int, 3>;
-using inorm4 = tnormn<int, 4>;
-using norm2 = tnormn<float, 2>;
-using norm3 = tnormn<float, 3>;
-using norm4 = tnormn<float, 4>;
-using dnorm2 = tnormn<double, 2>;
-using dnorm3 = tnormn<double, 3>;
-using dnorm4 = tnormn<double, 4>;
+using inorm2 = normal<int, 2>;
+using inorm3 = normal<int, 3>;
+using inorm4 = normal<int, 4>;
+using norm2 = normal<float, 2>;
+using norm3 = normal<float, 3>;
+using norm4 = normal<float, 4>;
+using dnorm2 = normal<double, 2>;
+using dnorm3 = normal<double, 3>;
+using dnorm4 = normal<double, 4>;
 }

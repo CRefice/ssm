@@ -1,26 +1,11 @@
 #pragma once
 
-#include "type-traits.hpp"
 #include "../simd/access.hpp"
 
 namespace ssm
 {
 namespace detail
 {
-template <typename T, int N, int M, typename Simd = void>
-struct make_component
-{
-	using type = T;
-};
-template <typename T, int N, int M>
-struct make_component<T, N, enable_if_t<is_simd<T, N>::value, void>>
-{
-	using type = simd::vector_accessor<T, N, M>;
-};
-template <typename T, int N, int M>
-using component = make_component<T, N, M>::type;
-}
-
 template <typename T, size_t N>
 struct vector_data {
 	vector_data() = default;
@@ -72,5 +57,5 @@ struct vector_data<T, 4> {
 		simd::vector<T, 4> data;
 	};
 };
-
+}
 }

@@ -29,7 +29,7 @@ vector<T, N> set_wide(T val) {
 	vector<T, N> ret;
 	for (int i = 0; i < N; ++i)
 		ret[i] = val;
-	return val;
+	return ret;
 }
 }
 }
