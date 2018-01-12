@@ -6,7 +6,7 @@ namespace ssm
 {
 namespace detail
 {
-template <typename T, size_t N>
+template <typename T, int N>
 struct vector_data {
 	vector_data() = default;
 	vector_data(simd::vector<T, N> data) : data(data) {}
@@ -58,4 +58,23 @@ struct vector_data<T, 4> {
 	};
 };
 }
+
+//---------------------------
+// Data-accessing functions
+//---------------------------
+template <typename T, int N>
+T* data_ptr(detail::vector_data<T, N>& vec) { return reinterpret_cast<T*>(&(vec.data)); }
+template <typename T, int N>
+T* begin(detail::vector_data<T, N>& vec) { return data_ptr(vec); }
+template <typename T, int N>
+T* end(detail::vector_data<T, N>& vec) { return data_ptr(vec) + N; }
+
+template <typename T, int N>
+const T* data_ptr(const detail::vector_data<T, N>& vec) {
+	return reinterpret_cast<const T*>(&(vec.data));
+}
+template <typename T, int N>
+const T* begin(const detail::vector_data<T, N>& vec) { return data_ptr(vec); }
+template <typename T, int N>
+const T* end(const detail::vector_data<T, N>& vec) { return data_ptr(vec) + N; }
 }

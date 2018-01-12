@@ -11,12 +11,6 @@ mat4 rotate(const quat& rot);
 mat4 scale(const vec3& scale);
 mat4 perspective(float fovy, float aspect, float znear, float zfar);
 mat4 look_at(const vec3& eye, const vec3& target, const vec3& up);
-
-//Not sure if I should define these in mat4.hpp
-vec4 operator*(const mat4& mat, const vec4& vec);
-mat4 operator*(const mat4& lhs, const mat4& rhs);
-//Count here should be even!!!
-void batch_transform(const mat4& mat, vec4* vin, vec4* vout, unsigned count);
 }
 
 #include "src\transform.inl"

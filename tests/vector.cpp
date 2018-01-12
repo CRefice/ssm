@@ -1,8 +1,8 @@
 #include <chrono>
 #include <iostream>
 
-#include <vector.hpp>
-#include <simd/types.hpp>
+#include <ssm/vector.hpp>
+#include <ssm/simd/types.hpp>
 
 int main() {
 	ssm::vec4 vec{};

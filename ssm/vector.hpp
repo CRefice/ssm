@@ -130,20 +130,6 @@ inline bool operator!=(const vector<T, N>& a, const vector<T, N>& b) {
 	return !(a == b);
 }
 
-template <typename T, int N>
-inline const T* data_ptr(const vector<T, N>& a) { return &(a.data[0]); }
-template <typename T, int N>
-inline const T* begin(const vector<T, N>& a) { return data_ptr(a); }
-template <typename T, int N>
-inline const T* end(const vector<T, N>& a) { return begin(a) + N; }
-
-template <typename T, int N>
-inline T* data_ptr(vector<T, N>& a) { return &(a.data[0]); }
-template <typename T, int N>
-inline T* begin(vector<T, N>& a) { return data_ptr(a); }
-template <typename T, int N>
-inline T* end(vector<T, N>& a) { return begin(a) + N; }
-
 //----------------------------------------------
 // Utility typedefs
 //----------------------------------------------

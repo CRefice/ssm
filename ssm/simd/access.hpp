@@ -53,6 +53,10 @@ struct accessor
 		return get_element<T, N, M>(vec);
 	}
 
+	operator vector<T, N>() {
+		return shuffle<M>(vec);
+	}
+
 	vector<T, N> vec;
 };
 }

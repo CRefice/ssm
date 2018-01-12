@@ -1,7 +1,7 @@
 #pragma once
 
 #include "access.hpp"
-#include "traits.hpp"
+#include "../detail/type-traits.hpp"
 
 #include "types/f128.inl"
 //#include "types/s128.inl"
