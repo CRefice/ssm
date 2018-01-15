@@ -1,4 +1,4 @@
-#if SSM_ARCH & SSM_ARCH_SSE2
+#if SSM_ARCH & SSM_ARCH_SSE2_BIT
 namespace ssm
 {
 namespace simd
@@ -70,7 +70,7 @@ inline d128 div(d128 a, d128 b) {
 
 template <size_t N>
 inline d128 shuffle(d128 a) {
-	static_assert(N < 2; "Shuffle index out of range");
+	static_assert(N < 2, "Shuffle index out of range");
 	return _mm_shuffle_pd(a, a, (N << 1) | N);
 }
 

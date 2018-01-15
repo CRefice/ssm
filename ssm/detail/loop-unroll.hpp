@@ -1,5 +1,7 @@
 #pragma once
 
+#include <type_traits>
+
 namespace ssm
 {
 namespace detail
@@ -57,11 +59,11 @@ struct unroll
 	}
 
 	//return == a[0] * b[0] + a[1] * b[1] ...
-	inline static T dot(const T& a, const T& b) {
+	inline static typename T::value_type dot(const T& a, const T& b) {
 		return a[Start] * b[Start] + unroll<T, Start + 1, End>::dot(a, b);
 	}
 	template <typename S>
-	inline static T dot(const T& a, const S& b) {
+	inline static typename T::value_type dot(const T& a, const S& b) {
 		return a[Start] * b + unroll<T, Start + 1, End>::dot(a, b);
 	}
 };
@@ -88,9 +90,13 @@ struct unroll<T, End, End>
 	inline static void negate(T& a) { }
 
 	//return == a[0] * b[0] + a[1] * b[1] ...
-	inline static T dot(const T& a, const T& b) { return 0; }
+	inline static typename T::value_type dot(const T& a, const T& b) {
+		return 0;
+	}
 	template <typename S>
-	inline static T dot(const T& a, const S& b) { return 0; }
+	inline static typename T::value_type dot(const T& a, const S& b) {
+		return 0;
+	}
 };
 }
 }

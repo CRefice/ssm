@@ -45,6 +45,15 @@
 #define SSM_ARCH_AVX2 127
 #define SSM_ARCH_AVX512 255
 
+#define SSM_ARCH_SSE2_BIT 1
+#define SSM_ARCH_SSE3_BIT 2
+#define SSM_ARCH_SSSE3_BIT 4
+#define SSM_ARCH_SSE4_BIT 8
+#define SSM_ARCH_SSE4_2_BIT 16
+#define SSM_ARCH_AVX_BIT 32
+#define SSM_ARCH_AVX2_BIT 64
+#define SSM_ARCH_AVX512_BIT 128
+
 #ifdef SSM_FORCE_PURE
 # define SSM_ARCH SSM_ARCH_PURE
 #elif defined(SSM_FORCE_AVX512)
@@ -111,19 +120,19 @@
 #	include <intrin.h>
 #endif
 
-#if SSM_ARCH & SSM_ARCH_AVX2
+#if SSM_ARCH & SSM_ARCH_AVX2_BIT
 #	include <immintrin.h>
-#elif SSM_ARCH & SSM_ARCH_AVX
+#elif SSM_ARCH & SSM_ARCH_AVX_BIT
 #	include <immintrin.h>
-#elif SSM_ARCH & SSM_ARCH_SSE4_2
+#elif SSM_ARCH & SSM_ARCH_SSE4_2_BIT
 #	include <nmmintrin.h>
-#elif SSM_ARCH & SSM_ARCH_SSE4
+#elif SSM_ARCH & SSM_ARCH_SSE4_BIT
 #	include <smmintrin.h>
-#elif SSM_ARCH & SSM_ARCH_SSSE3
+#elif SSM_ARCH & SSM_ARCH_SSSE3_BIT
 #	include <tmmintrin.h>
-#elif SSM_ARCH & SSM_ARCH_SSE3
+#elif SSM_ARCH & SSM_ARCH_SSE3_BIT
 #	include <pmmintrin.h>
-#elif SSM_ARCH & SSM_ARCH_SSE2
+#elif SSM_ARCH & SSM_ARCH_SSE2_BIT
 #	include <emmintrin.h>
 #endif
 

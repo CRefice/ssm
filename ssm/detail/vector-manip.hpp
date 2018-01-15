@@ -6,10 +6,12 @@
 // Unfortunately, C++ does not allow partial specialization of template functions.
 // So the next best thing is to emulate it using a class with only static member functions, and then call those from free functions.
 // It's a complicated mess, but it should be completely transparent to the end user
+#include <cmath>
 
 #include "loop-unroll.hpp"
 #include "type-traits.hpp"
 #include "vector-data.hpp"
+#include "../simd/types.hpp"
 
 namespace ssm
 {

@@ -8,7 +8,7 @@ namespace ssm
 template <typename T, int N>
 struct vector : detail::vector_data<T, N>
 {
-	using vector_data::vector_data;
+	using detail::vector_data<T, N>::vector_data;
 
 	const T& operator[](size_t index) const {
 		assert(index < N);
@@ -23,8 +23,8 @@ struct vector : detail::vector_data<T, N>
 template <typename T, int N>
 struct normal : detail::vector_data<T, N>
 {
-	using vector_data::vector_data;
-	operator vector<T, N>() const { return vector<T, N>(data); }
+	using detail::vector_data<T, N>::vector_data;
+	operator vector<T, N>() const { return vector<T, N>(this->data); }
 
 	const T& operator[](size_t index) const {
 		assert(index < N);
@@ -71,7 +71,7 @@ inline normal<T, N> cross(const normal<T, N>& a, const normal<T, N>& b) {
 			);
 }
 
-template <typename T, size_t N>
+template <typename T, int N>
 inline normal<T, N> normalize(const vector<T, N>& vec) {
 	normal<T, N> norm(vec.data);
 	detail::vec_impl<T, N>::normalize(norm);
