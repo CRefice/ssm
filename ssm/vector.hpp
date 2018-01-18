@@ -57,7 +57,7 @@ template <template <class, int> class A,
 				 template <class, int> class B,
 				 typename T, int N>
 inline vector<T, N> cross(const A<T, N>& a, const B<T, N>& b) {
-	static_assert(N == 3, "Cross product is only defined for 3D vector<T, N>s");
+	static_assert(N == 3, "Cross product is only defined for 3D vectors");
 	return vector<T, N>(
 			a.y * b.z - a.z * b.y,
 			a.z * b.x - a.x * b.z,
@@ -67,7 +67,7 @@ inline vector<T, N> cross(const A<T, N>& a, const B<T, N>& b) {
 
 template <typename T, int N>
 inline normal<T, N> cross(const normal<T, N>& a, const normal<T, N>& b) {
-	static_assert(N == 3, "Cross product is only defined for 3D vector<T, N>s");
+	static_assert(N == 3, "Cross product is only defined for 3D vectors");
 	return normal<T, N>(
 			a.y * b.z - a.z * b.y,
 			a.z * b.x - a.x * b.z,
@@ -100,9 +100,23 @@ inline vector<T, N>& operator*=(vector<T, N>& a, const Vec<T, N>& b) {
 	detail::vec_impl<T, N>::mul(a, b);
 	return a;
 }
+
+template <template <class, int> class Vec,
+	typename T, int N>
+	inline vector<T, N>& operator*=(vector<T, N>& a, T b) {
+	detail::vec_impl<T, N>::mul(a, b);
+	return a;
+}
+
 template <template <class, int> class Vec,
 				 typename T, int N>
 inline vector<T, N>& operator/=(vector<T, N>& a, const Vec<T, N>& b) {
+	detail::vec_impl<T, N>::div(a, b);
+	return a;
+}
+
+template <typename T, int N>
+inline vector<T, N>& operator/=(vector<T, N>& a, T b) {
 	detail::vec_impl<T, N>::div(a, b);
 	return a;
 }
@@ -111,32 +125,46 @@ template <template <class, int> class A,
 				 template <class, int> class B,
 				 typename T, int N>
 inline vector<T, N> operator+(A<T, N> a, const B<T, N>& b) {
-	detail::vec_impl<T, N>::add(a, b);
-	return a;
+	return static_cast<vector<T, N>&>(a) += b;
 }
 
 template <template <class, int> class A,
 				 template <class, int> class B,
 				 typename T, int N>
 inline vector<T, N> operator-(A<T, N> a, const B<T, N>& b) {
-	detail::vec_impl<T, N>::sub(a, b);
-	return a;
+	return static_cast<vector<T, N>&>(a) -= b;
 }
 
 template <template <class, int> class A,
 				 template <class, int> class B,
 				 typename T, int N>
 inline vector<T, N> operator*(A<T, N> a, const B<T, N>& b) {
-	detail::vec_impl<T, N>::mul(a, b);
-	return a;
+	return static_cast<vector<T, N>&>(a) *= b;
+}
+
+template <template <class, int> class A,
+	typename T, int N>
+inline vector<T, N> operator*(A<T, N> a, T b) {
+	return static_cast<vector<T, N>&>(a) *= b;
+}
+
+template <template <class, int> class A,
+	typename T, int N>
+inline vector<T, N> operator*(T a, A<T, N> b) {
+	return b * a;
 }
 
 template <template <class, int> class A,
 				 template <class, int> class B,
 				 typename T, int N>
 inline vector<T, N> operator/(A<T, N> a, const B<T, N>& b) {
-	detail::vec_impl<T, N>::div(a, b);
-	return a;
+	return static_cast<vector<T, N>&>(a) /= b;
+}
+
+template <template <class, int> class A,
+	typename T, int N>
+inline vector<T, N> operator/(A<T, N> a, T b) {
+	return static_cast<vector<T, N>&>(a) /= b;
 }
 
 template <template <class, int> class Vec, typename T, int N>

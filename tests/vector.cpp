@@ -2,10 +2,9 @@
 #include <iostream>
 
 #include <ssm/vector.hpp>
-#include <ssm/simd/types.hpp>
 
 int main() {
-	ssm::vec4 vec{};
+	ssm::vec4 vec;
 	assert(vec.x == 0.0f);
 	assert(vec.y == 0.0f);
 	assert(vec.z == 0.0f);
@@ -29,13 +28,16 @@ int main() {
 
 	assert(vec == vec);
 
+	vec = ssm::vec4(5.0f);
+	vec /= 5.0f;
+
+	assert(vec.x == 1.0f);
+	assert(vec.y == 1.0f);
+	assert(vec.z == 1.0f);
+	assert(vec.w == 1.0f);
+
 	auto norm = ssm::normalize(vec);
+	assert(ssm::dot(norm, norm) == 1.0f);
 
-	ssm::ivec2 ivec{ 5, 10 };
-	for (int i = 0; i < 5; ++i) {
-		ivec += ssm::ivec2{ 2, 2 };
-	}
-
-	std::cout << ssm::dot(norm, norm) << std::endl;
 	return 0;
 }
