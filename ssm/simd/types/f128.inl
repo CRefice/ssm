@@ -108,7 +108,15 @@ inline f128 cmp_eq(f128 a, f128 b) {
 }
 
 inline f128 rsqrt(f128 a) {
+#ifdef SSM_FAST_MATH
 	return _mm_rsqrt_ps(a);
+#else
+	const f128 three = _mm_set1_ps(3.0f);
+	const f128 half = _mm_set1_ps(0.5f);
+	const f128 res = _mm_rsqrt_ps(a); 
+	const f128 muls = _mm_mul_ps(_mm_mul_ps(a, res), res); 
+	return _mm_mul_ps(_mm_mul_ps(half, res), _mm_sub_ps(three, muls)); 
+#endif
 }
 
 inline f128 dot(f128 a, f128 b) {

@@ -27,35 +27,15 @@ int main() {
 	assert(vec.z == 8.0f);
 	assert(vec.w == 8.0f);
 
-	auto b4 = std::chrono::high_resolution_clock::now();
-	ssm::vec4 vec3 = vec;
-	for (int i = 0; i < 10000; ++i) {
-		vec3 += ssm::vec4{ 0.1f, 0.1f, 0.1f, 0.1f };
-	}
-	auto after = std::chrono::high_resolution_clock::now();
-	std::cout << (after - b4).count() << std::endl;
-
 	assert(vec == vec);
 
 	auto norm = ssm::normalize(vec);
-
-	ssm::vec4 vec2 = { -1, -1, -1, -1 };
-	auto now = std::chrono::high_resolution_clock::now();
-	for (int i = 0; i < 100000; ++i) {
-		vec2 *= ssm::vec4{ 2, 2, 2, 2 };
-		vec2 += (ssm::vec4)norm;
-	}
-	auto dur = std::chrono::high_resolution_clock::now() - now;
-	std::cout << dur.count() << std::endl;
 
 	ssm::ivec2 ivec{ 5, 10 };
 	for (int i = 0; i < 5; ++i) {
 		ivec += ssm::ivec2{ 2, 2 };
 	}
 
-	std::cout << ssm::detail::vec_impl<float, 4>::dot(vec, vec) << std::endl;
-	std::cout << ssm::length(vec) << std::endl;
-
-	//std::cout << ssm::length(ivec) << std::endl;
+	std::cout << ssm::dot(norm, norm) << std::endl;
 	return 0;
 }
