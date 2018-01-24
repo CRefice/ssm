@@ -94,6 +94,7 @@ inline vector<T, N>& operator-=(vector<T, N>& a, const Vec<T, N>& b) {
 	detail::vec_impl<T, N>::sub(a, b);
 	return a;
 }
+
 template <template <class, int> class Vec,
 				 typename T, int N>
 inline vector<T, N>& operator*=(vector<T, N>& a, const Vec<T, N>& b) {
@@ -102,16 +103,15 @@ inline vector<T, N>& operator*=(vector<T, N>& a, const Vec<T, N>& b) {
 }
 
 template <template <class, int> class Vec,
-	typename T, int N>
-	inline vector<T, N>& operator*=(vector<T, N>& a, T b) {
-	detail::vec_impl<T, N>::mul(a, b);
-	return a;
-}
-
-template <template <class, int> class Vec,
 				 typename T, int N>
 inline vector<T, N>& operator/=(vector<T, N>& a, const Vec<T, N>& b) {
 	detail::vec_impl<T, N>::div(a, b);
+	return a;
+}
+
+template <typename T, int N>
+inline vector<T, N>& operator*=(vector<T, N>& a, T b) {
+	detail::vec_impl<T, N>::mul(a, b);
 	return a;
 }
 

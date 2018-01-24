@@ -52,7 +52,7 @@ inline matrix<T, M, N> operator-(matrix<T, M, N> a, const matrix<T, M, N>& b) { 
 
 template <typename T, int M, int N>
 inline vector<T, M> operator*(const vector<T, N>& vec, const matrix<T, M, N>& mat) {
-	return detail::mat_unroll<T, M, N>::mul<N - 1>(vec, mat);
+	return detail::mat_unroll<0, N>::mul(vec, mat);
 }
 
 template <typename T, int M, int N>
@@ -62,14 +62,14 @@ inline vector<T, M> operator*(const matrix<T, M, N>& mat, const vector<T, N>& ve
 
 template <typename T, int N>
 inline vector<T, N>& operator*=(vector<T, N>& vec, const matrix<T, N, N>& mat) {
-	vec = detail::mat_unroll<T, N, N>::mul<N - 1>(vec, mat);
+	vec = detail::mat_unroll<0, N>::mul(vec, mat);
 	return vec;
 }
 
 template <typename T, int M, int N, int P>
 inline matrix<T, M, P> operator*(const matrix<T, M, N>& a, const matrix<T, N, P> b) {
 	matrix<T, M, P> ret;
-	detail::mat_unroll<T, M, N, P>::mul<P - 1>(ret, a, b);
+	detail::mat_unroll<0, P>::mul(ret, a, b);
 	return ret;
 }
 

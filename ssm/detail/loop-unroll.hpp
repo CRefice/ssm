@@ -11,7 +11,7 @@ namespace detail
 template <typename T, int Start, int End>
 struct unroll
 {
-	static_assert(Start < End, "Error in template parameter: \"Start\" must be less than \"End\"");
+	static_assert(Start < End, "unroll: Error in template parameter: \"Start\" must be less than \"End\"");
 
 	inline static void add(T& a, const T& b) {
 		a[Start] += b[Start];

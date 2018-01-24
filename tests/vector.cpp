@@ -26,6 +26,8 @@ int main() {
 	assert(vec.z == 8.0f);
 	assert(vec.w == 8.0f);
 
+	assert(vec * 5.0f == 5.0f * vec);
+
 	assert(vec == vec);
 
 	vec = ssm::vec4(5.0f);
