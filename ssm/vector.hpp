@@ -65,16 +65,6 @@ inline vector<T, N> cross(const A<T, N>& a, const B<T, N>& b) {
 			);
 }
 
-template <typename T, int N>
-inline normal<T, N> cross(const normal<T, N>& a, const normal<T, N>& b) {
-	static_assert(N == 3, "Cross product is only defined for 3D vectors");
-	return normal<T, N>(
-			a.y * b.z - a.z * b.y,
-			a.z * b.x - a.x * b.z,
-			a.x * b.y - a.y * b.x
-			);
-}
-
 template <template <class, int> class Vec, typename T, int N>
 inline normal<T, N> normalize(const Vec<T, N>& vec) {
 	normal<T, N> norm(vec.data);
@@ -88,6 +78,7 @@ inline vector<T, N>& operator+=(vector<T, N>& a, const Vec<T, N>& b) {
 	detail::vec_impl<T, N>::add(a, b);
 	return a;
 }
+
 template <template <class, int> class Vec,
 				 typename T, int N>
 inline vector<T, N>& operator-=(vector<T, N>& a, const Vec<T, N>& b) {
