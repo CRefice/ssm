@@ -41,12 +41,25 @@ struct vec_impl
 		unroll<simd::vector<T, N>, 0, N>::mul(a.data, b.data);
 	}
 
+	static inline void mul(vector_data<T, N>& a, T b) {
+		unroll<simd::vector<T, N>, 0, N>::mul(a.data, b);
+	}
+
 	static inline void div(vector_data<T, N>& a, const vector_data<T, N>& b) {
 		unroll<simd::vector<T, N>, 0, N>::div(a.data, b.data);
 	}
 
+	static inline void div(vector_data<T, N>& a, T b) {
+		unroll<simd::vector<T, N>, 0, N>::div(a.data, b);
+	}
+
 	static inline void negate(vector_data<T, N>& vec) {
 		unroll<simd::vector<T, N>, 0, N>::negate(vec.data);
+	}
+
+	static inline void quat_conjugate(vector_data<T, 4>& a) {
+		// Negate all members but the real part (w)
+		unroll<simd::vector<T, 3>, 0, 3>::negate(a.data);
 	}
 
 	static inline bool cmp_eq(const vector_data<T, N>& a, const vector_data<T, N>& b) {
@@ -79,12 +92,24 @@ struct vec_impl<T, N, enable_if_t<simd::is_simd<T, N>::value, void>>
 		a.data = simd::mul(a.data, b.data);
 	}
 
+	static inline void mul(vector_data<T, N>& a, T b) {
+		a.data = simd::mul(a.data, simd::set_wide<T, N>(b));
+	}
+
 	static inline void div(vector_data<T, N>& a, const vector_data<T, N>& b) {
 		a.data = simd::div(a.data, b.data);
 	}
 
+	static inline void div(vector_data<T, N>& a, T b) {
+		a.data = simd::mul(a.data, simd::set_wide<T, N>(b));
+	}
+
 	static inline void negate(vector_data<T, N>& a) {
 		a.data = simd::negate(a.data);
+	}
+
+	static inline void quat_conjugate(vector_data<T, 4>& a) {
+		a.data = simd::negate<1, 1, 1, 0>(a.data);
 	}
 
 	static inline bool cmp_eq(const vector_data<T, N>& a, const vector_data<T, N>& b) {
