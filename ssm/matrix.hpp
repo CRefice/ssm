@@ -78,4 +78,17 @@ inline matrix<T, N, N>& operator*=(matrix<T, N, N>& a, const matrix<T, N, N> b) 
 	a = a * b;
 	return a;
 }
+
+//----------------------------------------------
+// Utility typedefs
+//----------------------------------------------
+using imat2 = matrix<int, 2, 2>;
+using imat3 = matrix<int, 3, 3>;
+using imat4 = matrix<int, 4, 4>;
+using mat2 = matrix<float, 2, 2>;
+using mat3 = matrix<float, 3, 3>;
+using mat4 = matrix<float, 4, 4>;
+using dmat2 = matrix<double, 2, 2>;
+using dmat3 = matrix<double, 3, 3>;
+using dmat4 = matrix<double, 4, 4>;
 }
