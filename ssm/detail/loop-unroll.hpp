@@ -6,97 +6,128 @@ namespace ssm
 {
 namespace detail
 {
-// This is a utility class used to unroll loops,
+// A utility class used to unroll loops,
 // starting from Start (inclusive) and ending in End (exclusive)
-template <typename T, int Start, int End>
-struct unroll
+template <int Start, int End>
+class unroll
 {
-	static_assert(Start < End, "unroll: Error in template parameter: \"Start\" must be less than \"End\"");
+	static_assert(Start < End, "struct unroll: Error in template parameter:\
+			\"Start\" must be less than \"End\"");
 
+	template <typename T>
+	using elem_type = typename std::remove_reference<
+		typename std::remove_cv<decltype((std::declval<T>())[0])>::type
+	>::type;
+
+	using next = unroll<Start + 1, End>;
+
+public:
+	template <typename T>
 	inline static void add(T& a, const T& b) {
 		a[Start] += b[Start];
-		unroll<T, Start + 1, End>::add(a, b);
+		next::add(a, b);
 	}
-	template <typename S>
-	inline static void add(T& a, const S& b) {
+	template <typename T>
+	inline static void add(T& a, const elem_type<T>& b) {
 		a[Start] += b;
-		unroll<T, Start + 1, End>::add(a, b);
+		next::add(a, b);
 	}
 
+	template <typename T>
 	inline static void sub(T& a, const T& b) {
 		a[Start] -= b[Start];
-		unroll<T, Start + 1, End>::sub(a, b);
+		next::sub(a, b);
 	}
-	template <typename S>
-	inline static void sub(T& a, const S& b) {
+	template <typename T>
+	inline static void sub(T& a, const elem_type<T>& b) {
 		a[Start] -= b;
-		unroll<T, Start + 1, End>::sub(a, b);
+		next::sub(a, b);
 	}
 
+	template <typename T>
 	inline static void mul(T& a, const T& b) {
 		a[Start] *= b[Start];
-		unroll<T, Start + 1, End>::mul(a, b);
+		next::mul(a, b);
 	}
-	template <typename S>
-	inline static void mul(T& a, const S& b) {
+	template <typename T>
+	inline static void mul(T& a, const elem_type<T>& b) {
 		a[Start] *= b;
-		unroll<T, Start + 1, End>::mul(a, b);
+		next::mul(a, b);
 	}
 
+	template <typename T>
 	inline static void div(T& a, const T& b) {
 		a[Start] /= b[Start];
-		unroll<T, Start + 1, End>::div(a, b);
+		next::div(a, b);
 	}
-	template <typename S>
-	inline static void div(T& a, const S& b) {
+	template <typename T>
+	inline static void div(T& a, const elem_type<T>& b) {
 		a[Start] /= b;
-		unroll<T, Start + 1, End>::div(a, b);
+		next::div(a, b);
 	}
 
+	template <typename T>
 	inline static void negate(T& a) {
 		a[Start] = -a[Start];
-		unroll<T, Start + 1, End>::negate(a);
+		next::negate(a);
+	}
+
+	template <typename T>
+	inline static bool equal(const T& a, const T& b) {
+		return a[Start] == b[Start] && next::equal(a, b);
 	}
 
 	//return == a[0] * b[0] + a[1] * b[1] ...
-	inline static typename T::value_type dot(const T& a, const T& b) {
-		return a[Start] * b[Start] + unroll<T, Start + 1, End>::dot(a, b);
+	template <typename T>
+	inline static elem_type<T> dot(const T& a, const T& b) {
+		return a[Start] * b[Start] + next::dot(a, b);
 	}
-	template <typename S>
-	inline static typename T::value_type dot(const T& a, const S& b) {
-		return a[Start] * b + unroll<T, Start + 1, End>::dot(a, b);
-	}
+	template <typename T>
+	inline static elem_type<T> dot(const T& a, const elem_type<T>& b) {
+		return a[Start] * b + next::dot(a, b);
+	}	
 };
 
-	template <typename T, int End>
-struct unroll<T, End, End>
+template <int End>
+class unroll<End, End>
 {
+	template <typename T>
+	using elem_type = typename std::remove_reference<
+		typename std::remove_cv<decltype(std::declval<T>()[End])>::type
+	>::type;
+
+public:
+	template <typename T>
 	inline static void add(T& a, const T& b) { }
-	template <typename S>
-	inline static void add(T& a, const S& b) { }
+	template <typename T>
+	inline static void add(T& a, const elem_type<T>& b) { }
 
+	template <typename T>
 	inline static void sub(T& a, const T& b) { }
-	template <typename S>
-	inline static void sub(T& a, const S& b) { }
+	template <typename T>
+	inline static void sub(T& a, const elem_type<T>& b) { }
 
+	template <typename T>
 	inline static void mul(T& a, const T& b) { }
-	template <typename S>
-	inline static void mul(T& a, const S& b) { } 
+	template <typename T>
+	inline static void mul(T& a, const elem_type<T>& b) { }
 
+	template <typename T>
 	inline static void div(T& a, const T& b) { }
-	template <typename S>
-	inline static void div(T& a, const S& b) { }
+	template <typename T>
+	inline static void div(T& a, const elem_type<T>& b) { }
 
+	template <typename T>
 	inline static void negate(T& a) { }
 
+	template <typename T>
+	inline static bool equal(const T& a, const T& b) { return true; }
+
 	//return == a[0] * b[0] + a[1] * b[1] ...
-	inline static typename T::value_type dot(const T& a, const T& b) {
-		return 0;
-	}
-	template <typename S>
-	inline static typename T::value_type dot(const T& a, const S& b) {
-		return 0;
-	}
+	template <typename T>
+	inline static elem_type<T> dot(const T& a, const T& b) { return {}; }
+	template <typename T>
+	inline static elem_type<T> dot(const T& a, const elem_type<T>& b) { return {}; }
 };
 }
 }

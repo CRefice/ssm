@@ -7,6 +7,8 @@ namespace ssm
 template <typename T, int M, int N>
 struct matrix
 {
+	using value_type = vector<T, M>;
+
 	matrix() = default;
 	matrix(T val) {
 		for (int i = 0; i < N; ++i)
@@ -27,19 +29,19 @@ struct matrix
 
 template <typename T, int M, int N>
 inline matrix<T, M, N> operator-(matrix<T, M, N> mat) {
-	detail::unroll<matrix<T, M, N>, 0, N>::negate(mat);
+	detail::unroll<0, N>::negate(mat);
 	return mat;
 }
 
 template <typename T, int M, int N>
 inline matrix<T, M, N>& operator+=(matrix<T, M, N>& a, const matrix<T, M, N>& b) {
-	detail::unroll<matrix<T, M, N>, 0, N>::add(a, b);
+	detail::unroll<0, N>::add(a, b);
 	return a;
 }
 
 template <typename T, int M, int N>
 inline matrix<T, M, N>& operator-=(matrix<T, M, N>& a, const matrix<T, M, N>& b) {
-	detail::unroll<matrix<T, M, N>, 0, N>::sub(a, b);
+	detail::unroll<0, N>::sub(a, b);
 	return a;
 }
 
@@ -47,6 +49,12 @@ template <typename T, int M, int N>
 inline matrix<T, M, N> operator+(matrix<T, M, N> a, const matrix<T, M, N>& b) { return a += b; }
 template <typename T, int M, int N>
 inline matrix<T, M, N> operator-(matrix<T, M, N> a, const matrix<T, M, N>& b) { return a -= b; }
+
+
+template <typename T, int M, int N>
+inline bool operator==(const matrix<T, M, N>& a, const matrix<T, M, N>& b) {
+	return detail::unroll<0, N>::equal(a, b);
+}
 
 #include "detail/matrix-mul.inl"
 
