@@ -53,7 +53,12 @@ inline matrix<T, M, N> operator-(matrix<T, M, N> a, const matrix<T, M, N>& b) { 
 
 template <typename T, int M, int N>
 inline bool operator==(const matrix<T, M, N>& a, const matrix<T, M, N>& b) {
-	return detail::unroll<0, N>::equal(a, b);
+	return detail::unroll<0, N>::equals(a, b);
+}
+
+template <typename T, int M, int N>
+inline bool operator!=(const matrix<T, M, N>& a, const matrix<T, M, N>& b) {
+	return !(a == b);
 }
 
 #include "detail/matrix-mul.inl"

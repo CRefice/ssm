@@ -68,8 +68,8 @@ struct vec_impl
 		unroll<0, 3>::negate(a.data);
 	}
 
-	static inline bool cmp_eq(const vector_data<T, N>& a, const vector_data<T, N>& b) {
-		return unroll<0, N>::equal(a.data, b.data);
+	static inline bool equals(const vector_data<T, N>& a, const vector_data<T, N>& b) {
+		return unroll<0, N>::equals(a.data, b.data);
 	}
 };
 
@@ -137,9 +137,8 @@ struct vec_impl<T, N, enable_if_t<simd::is_simd<T, N>::value, void>>
 		a.data = simd::negate<1, 1, 1, 0>(a.data);
 	}
 
-	static inline bool cmp_eq(const vector_data<T, N>& a, const vector_data<T, N>& b) {
-		const simd::vector<T, N> cmp = simd::cmp_eq(a.data, b.data);
-		return static_cast<bool>(simd::get_element<T, N, 0>(cmp));
+	static inline bool equals(const vector_data<T, N>& a, const vector_data<T, N>& b) {
+		return simd::equals(a.data, b.data);
 	}
 };
 }

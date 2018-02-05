@@ -103,8 +103,9 @@ inline f128 shuffle(f128 a, f128 b) {
 	return _mm_shuffle_ps(a, b, (W << 6) | (Z << 4) | (Y << 2) | X);
 }
 
-inline f128 cmp_eq(f128 a, f128 b) {
-	return _mm_cmpeq_ps(a, b);
+inline bool equals(f128 a, f128 b) {
+	const f128 cmp0 = _mm_cmpeq_ps(a, b);
+	return _mm_movemask_ps(cmp0) == 0xf;
 }
 
 inline f128 rsqrt(f128 a) {

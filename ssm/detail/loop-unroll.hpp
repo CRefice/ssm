@@ -67,8 +67,8 @@ struct unroll
 	}
 
 	template <typename T>
-	inline static bool equal(const T& a, const T& b) {
-		return a[Start] == b[Start] && next::equal(a, b);
+	inline static bool equals(const T& a, const T& b) {
+		return a[Start] == b[Start] && next::equals(a, b);
 	}
 
 	//return == a[0] * b[0] + a[1] * b[1] ...
@@ -109,7 +109,7 @@ struct unroll<End, End>
 	inline static void negate(T& a) { }
 
 	template <typename T>
-	inline static bool equal(const T& a, const T& b) { return true; }
+	inline static bool equals(const T& a, const T& b) { return true; }
 
 	//return == a[0] * b[0] + a[1] * b[1] ...
 	template <typename T>

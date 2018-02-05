@@ -168,7 +168,7 @@ template <template <class, int> class A,
 				 template <class, int> class B,
 				 typename T, int N>
 inline bool operator==(const A<T, N>& a, const B<T, N>& b) {
-	return detail::vec_impl<T, N>::cmp_eq(a, b);
+	return detail::vec_impl<T, N>::equals(a, b);
 }
 
 template <template <class, int> class A,

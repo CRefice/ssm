@@ -81,8 +81,9 @@ inline d128 shuffle(d128 a, d128 b) {
 	return _mm_shuffle_pd(a, b, (Y << 1) | X);
 }
 
-inline d128 cmp_eq(d128 a, d128 b) {
-	return _mm_cmpeq_pd(a, b);
+inline bool equals(d128 a, d128 b) {
+	const d128 cmp0 = _mm_cmpeq_pd(a, b);
+	return _mm_movemask_pd(cmp0) == 0x3;
 }
 
 inline d128 sqrt(d128 a) {
