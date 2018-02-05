@@ -9,7 +9,6 @@
 #include <cmath>
 
 #include "loop-unroll.hpp"
-#include "type-traits.hpp"
 #include "vector-data.hpp"
 #include "../simd/types.hpp"
 

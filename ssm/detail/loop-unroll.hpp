@@ -1,6 +1,6 @@
 #pragma once
 
-#include <type_traits>
+#include "type-traits.hpp"
 
 namespace ssm
 {
@@ -9,19 +9,13 @@ namespace detail
 // A utility class used to unroll loops,
 // starting from Start (inclusive) and ending in End (exclusive)
 template <int Start, int End>
-class unroll
+struct unroll
 {
 	static_assert(Start < End, "struct unroll: Error in template parameter:\
 			\"Start\" must be less than \"End\"");
 
-	template <typename T>
-	using elem_type = typename std::remove_reference<
-		typename std::remove_cv<decltype((std::declval<T>())[0])>::type
-	>::type;
-
 	using next = unroll<Start + 1, End>;
 
-public:
 	template <typename T>
 	inline static void add(T& a, const T& b) {
 		a[Start] += b[Start];
@@ -89,14 +83,8 @@ public:
 };
 
 template <int End>
-class unroll<End, End>
+struct unroll<End, End>
 {
-	template <typename T>
-	using elem_type = typename std::remove_reference<
-		typename std::remove_cv<decltype(std::declval<T>()[End])>::type
-	>::type;
-
-public:
 	template <typename T>
 	inline static void add(T& a, const T& b) { }
 	template <typename T>

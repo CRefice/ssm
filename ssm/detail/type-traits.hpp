@@ -1,16 +1,17 @@
 #pragma once
 
+#include <type_traits>
+
 namespace ssm
 {
-// Could use the standard library ones, but don't really want to include the whole thing just for enable_if
-template<bool B, typename T = void>
-struct enable_if {};
- 
-template<typename T>
-struct enable_if<true, T> { typedef T type; };
-
 template <bool B, typename T>
-using enable_if_t = typename enable_if<B, T>::type;
+using enable_if_t = typename std::enable_if<B, T>::type;
+
+template <typename T>
+using elem_type = typename std::remove_reference<
+	typename std::remove_cv<decltype((std::declval<T>())[0])>::type
+>::type;
+
 namespace simd
 {
 // value is true if the specified vector type can be accelerated using SIMD,
