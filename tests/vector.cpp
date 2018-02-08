@@ -1,45 +1,154 @@
-#include <chrono>
-#include <iostream>
+#define CATCH_CONFIG_MAIN
+#include "catch.hpp"
 
 #include <ssm/vector.hpp>
 
-int main() {
+bool epsilon_compare(float a, float b, float epsilon) {
+	return std::abs(a - b) < epsilon;
+}
+
+TEST_CASE( "vector constructors", "[constructors]" ) {
 	ssm::vec4 vec;
-	assert(vec.x == 0.0f);
-	assert(vec.y == 0.0f);
-	assert(vec.z == 0.0f);
-	assert(vec.w == 0.0f);
 
-	vec = ssm::vec4(4.0f, 3.0f, 2.0f, 1.0f);
-	assert(vec.x == 4.0f);
-	assert(vec.y == 3.0f);
-	assert(vec.z == 2.0f);
-	assert(vec.w == 1.0f);
-	vec = -vec;
-	assert(vec.x == -4.0f);
-	assert(vec.y == -3.0f);
-	assert(vec.z == -2.0f);
-	assert(vec.w == -1.0f);
-	vec *= ssm::vec4(-2.0f, -2.5f, -4.0f, -8.0f);
-	assert(vec.x == 8.0f);
-	assert(vec.y == (-3.0f * -2.5f));
-	assert(vec.z == 8.0f);
-	assert(vec.w == 8.0f);
+	SECTION( "default constructor" ) {
+		REQUIRE(vec.x == 0.0f);
+		REQUIRE(vec.y == 0.0f);
+		REQUIRE(vec.z == 0.0f);
+		REQUIRE(vec.w == 0.0f);
+	}
 
-	assert(vec * 5.0f == 5.0f * vec);
+	SECTION( "one-argument constructor" ) {
+		vec = ssm::vec4(5.0f);
+		REQUIRE(vec.x == 5.0f);
+		REQUIRE(vec.y == 5.0f);
+		REQUIRE(vec.z == 5.0f);
+		REQUIRE(vec.w == 5.0f);
+	}
 
-	assert(vec == vec);
+	SECTION( "four-argument constructor" ) {
+		vec = ssm::vec4(4.0f, 3.0f, 2.0f, 1.0f);
+		REQUIRE(vec.x == 4.0f);
+		REQUIRE(vec.y == 3.0f);
+		REQUIRE(vec.z == 2.0f);
+		REQUIRE(vec.w == 1.0f);
+	}
 
-	vec = ssm::vec4(5.0f);
-	vec /= 5.0f;
+	SECTION( "equality comparisons" ) {
+		REQUIRE(vec == vec);
+		ssm::vec4 vec_2 (10.0f);
+		REQUIRE(vec != vec_2);
+		REQUIRE(vec_2 == vec_2);
+	}
 
-	assert(vec.x == 1.0f);
-	assert(vec.y == 1.0f);
-	assert(vec.z == 1.0f);
-	assert(vec.w == 1.0f);
+	SECTION( "vector length" ) {
+		vec = ssm::vec4(1.0f, 0.0f, 0.0f, 0.0f);
+		REQUIRE(ssm::sqlength(vec) == 1.0f);
+		REQUIRE(ssm::length(vec) == 1.0f);
+		vec = ssm::vec4(1.0f, 1.0f, 0.0f, 0.0f);
+		REQUIRE(epsilon_compare(ssm::sqlength(vec), 2.0f, 1e-6f));
+		REQUIRE(epsilon_compare(ssm::length(vec), std::sqrt(2.0f), 1e-6f));
+		vec = ssm::vec4(1.0f, 1.0f, 1.0f, 0.0f);
+		REQUIRE(epsilon_compare(ssm::sqlength(vec), 3.0f, 1e-6f));
+		REQUIRE(epsilon_compare(ssm::length(vec), std::sqrt(3.0f), 1e-6f));
+		vec = ssm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+		REQUIRE(epsilon_compare(ssm::sqlength(vec), 4.0f, 1e-6f));
+		REQUIRE(epsilon_compare(ssm::length(vec), 2.0f, 1e-6f));
+		vec = ssm::vec4(1.0f, 2.0f, 3.0f, 4.0f);
+		REQUIRE(epsilon_compare(ssm::sqlength(vec), 30.0f, 1e-6f));
+		REQUIRE(epsilon_compare(ssm::length(vec), std::sqrt(30.0f), 1e-6f));
+	}
 
-	auto norm = ssm::normalize(vec);
-	assert(ssm::dot(norm, norm) == 1.0f);
+	SECTION( "dot product" ) {
+		auto vec_1 = ssm::vec4(2.0f, 3.0f, 1.0f, 1.5f);
+		auto vec_2 = ssm::vec4(3.0f, 1.5f, 1.0f, 4.0f);
+		REQUIRE(epsilon_compare(ssm::dot(vec_1, vec_2), 17.5f, 1e-6f));
+	}
 
-	return 0;
+	SECTION( "cross product" ) {
+		auto vec_1 = ssm::vec3(1.0f, 0.0f, 0.0f);
+		auto vec_2 = ssm::vec3(0.0f, 1.0f, 0.0f);
+		auto cross = ssm::cross(vec_1, vec_2);
+		REQUIRE(epsilon_compare(cross.x, 0.0f, 1e-6f));
+		REQUIRE(epsilon_compare(cross.y, 0.0f, 1e-6f));
+		REQUIRE(epsilon_compare(cross.z, 1.0f, 1e-6f));
+
+		vec_1 = ssm::vec3(1.0f, 2.0f, 3.0f);
+		vec_2 = ssm::vec3(1.0f, 5.0f, 7.0f);
+		cross = ssm::cross(vec_1, vec_2);
+		REQUIRE(epsilon_compare(cross.x, -1.0f, 1e-6f));
+		REQUIRE(epsilon_compare(cross.y, -4.0f, 1e-6f));
+		REQUIRE(epsilon_compare(cross.z, 3.0f, 1e-6f));
+	}
+
+	SECTION( "normalization" ) {
+		vec = ssm::vec4(1.0f);
+		auto norm = ssm::normalize(vec);
+		REQUIRE(epsilon_compare(ssm::length(norm), 1.0f, 1e-6f));
+		REQUIRE(epsilon_compare(norm.x, 0.5f, 1e-6f));
+		REQUIRE(epsilon_compare(norm.y, 0.5f, 1e-6f));
+		REQUIRE(epsilon_compare(norm.z, 0.5f, 1e-6f));
+		REQUIRE(epsilon_compare(norm.w, 0.5f, 1e-6f));
+	}
+
+	SECTION( "arithmetic operators" ) {
+		vec = ssm::vec4(1.0f, 2.0f, 3.0f, 4.0f);
+		auto vec_2 = ssm::vec4(4.0f, 3.0f, 2.0f, 1.0f);
+
+		REQUIRE(vec + vec_2 == vec_2 + vec);
+		auto vec_3 = vec;
+		vec_3 += vec_2;
+		REQUIRE(vec_3 == vec + vec_2);
+		REQUIRE(epsilon_compare(vec_3.x, 5.0f, 1e-6f));
+		REQUIRE(epsilon_compare(vec_3.y, 5.0f, 1e-6f));
+		REQUIRE(epsilon_compare(vec_3.z, 5.0f, 1e-6f));
+		REQUIRE(epsilon_compare(vec_3.w, 5.0f, 1e-6f));
+
+		vec_3 = vec;
+		vec_3 -= vec_2;
+		REQUIRE(vec_3 == vec - vec_2);
+		REQUIRE(epsilon_compare(vec_3.x, -3.0f, 1e-6f));
+		REQUIRE(epsilon_compare(vec_3.y, -1.0f, 1e-6f));
+		REQUIRE(epsilon_compare(vec_3.z, 1.0f, 1e-6f));
+		REQUIRE(epsilon_compare(vec_3.w, 3.0f, 1e-6f));
+
+		REQUIRE(vec * vec_2 == vec_2 * vec);
+		vec_3 = vec;
+		vec_3 *= vec_2;
+		REQUIRE(vec_3 == vec * vec_2);
+		REQUIRE(epsilon_compare(vec_3.x, 4.0f, 1e-6f));
+		REQUIRE(epsilon_compare(vec_3.y, 6.0f, 1e-6f));
+		REQUIRE(epsilon_compare(vec_3.z, 6.0f, 1e-6f));
+		REQUIRE(epsilon_compare(vec_3.w, 4.0f, 1e-6f));
+
+		REQUIRE(vec * 3.0f == 3.0f * vec);
+		vec_3 = vec;
+		vec_3 *= 3.0f;
+		REQUIRE(vec_3 == vec * 3.0f);
+		REQUIRE(epsilon_compare(vec_3.x, 3.0f, 1e-6f));
+		REQUIRE(epsilon_compare(vec_3.y, 6.0f, 1e-6f));
+		REQUIRE(epsilon_compare(vec_3.z, 9.0f, 1e-6f));
+		REQUIRE(epsilon_compare(vec_3.w, 12.0f, 1e-6f));
+
+		vec_3 = vec;
+		vec_3 /= vec_2;
+		REQUIRE(vec_3 == vec / vec_2);
+		REQUIRE(epsilon_compare(vec_3.x, 0.25f, 1e-6f));
+		REQUIRE(epsilon_compare(vec_3.y, 2.0f / 3.0f, 1e-6f));
+		REQUIRE(epsilon_compare(vec_3.z, 1.5f, 1e-6f));
+		REQUIRE(epsilon_compare(vec_3.w, 4.0f, 1e-6f));
+
+		vec_3 = vec;
+		vec_3 /= 3.0f;
+		REQUIRE(vec_3 == vec / 3.0f);
+		REQUIRE(epsilon_compare(vec_3.x, 1.0f / 3.0f, 1e-6f));
+		REQUIRE(epsilon_compare(vec_3.y, 2.0f / 3.0f, 1e-6f));
+		REQUIRE(epsilon_compare(vec_3.z, 1.0f, 1e-6f));
+		REQUIRE(epsilon_compare(vec_3.w, 4.0f / 3.0f, 1e-6f));
+
+		vec_3 = -vec;
+		REQUIRE(vec_3.x == -1.0f);
+		REQUIRE(vec_3.y == -2.0f);
+		REQUIRE(vec_3.z == -3.0f);
+		REQUIRE(vec_3.w == -4.0f);
+	}
 }
