@@ -31,7 +31,7 @@ inline vector<T, N> set_element(vector<T, N> vec, T val) {
 }
 
 template <typename T, size_t N, size_t M>
-inline T get_element(vector<T, N> vec) {
+inline T get_element(const vector<T, N> vec) {
 	static_assert(M < N && M >= 0, "Vector access element is out of bounds");
 	return detail::access_impl<T, N, M>::get(vec);
 }
@@ -49,7 +49,7 @@ struct accessor
 		return vec;
 	}
 
-	operator T() {
+	operator T() const {
 		return get_element<T, N, M>(vec);
 	}
 
