@@ -10,7 +10,7 @@ template <typename T, int N>
 struct vector_data {
 	vector_data() = default;
 	vector_data(simd::vector<T, N> data) : data(data) {}
-	simd::vector<T, N> data;
+	simd::vector<T, N> data = {};
 };
 
 template <typename T>
@@ -23,7 +23,7 @@ struct vector_data<T, 2> {
 	union {
 		simd::accessor<T, 2, 0> x;
 		simd::accessor<T, 2, 1> y;
-		simd::vector<T, 2> data;
+		simd::vector<T, 2> data = {};
 	};
 };
 
@@ -38,7 +38,7 @@ struct vector_data<T, 3> {
 		simd::accessor<T, 3, 0> x;
 		simd::accessor<T, 3, 1> y;
 		simd::accessor<T, 3, 2> z;
-		simd::vector<T, 3> data;
+		simd::vector<T, 3> data = {};
 	};
 };
 
@@ -54,7 +54,7 @@ struct vector_data<T, 4> {
 		simd::accessor<T, 4, 1> y;
 		simd::accessor<T, 4, 2> z;
 		simd::accessor<T, 4, 3> w;
-		simd::vector<T, 4> data;
+		simd::vector<T, 4> data = {};
 	};
 };
 }

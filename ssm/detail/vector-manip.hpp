@@ -107,7 +107,7 @@ struct vec_impl<T, N, enable_if_t<simd::is_simd<T, N>::value, void>>
 	}
 
 	static inline void div(vector_data<T, N>& a, T b) {
-		a.data = simd::mul(a.data, simd::set_wide<T, N>(b));
+		a.data = simd::div(a.data, simd::set_wide<T, N>(b));
 	}
 
 	static inline void negate(vector_data<T, N>& a) {
@@ -116,12 +116,12 @@ struct vec_impl<T, N, enable_if_t<simd::is_simd<T, N>::value, void>>
 
 	static inline void quat_mul(vector_data<T, 4>& a, const vector_data<T, 4>& b) {
 		const simd::vector<T, 4> awwww = simd::shuffle<3>(a.data);
-		const simd::vector<T, 4> axyzx = simd::shuffle<0, 1, 2, 0>(a.data);
-		const simd::vector<T, 4> ayzxy = simd::shuffle<1, 2, 0, 1>(a.data);
-		const simd::vector<T, 4> azxyz = simd::shuffle<2, 0, 1, 2>(a.data);
-		const simd::vector<T, 4> bwwwx = simd::shuffle<3, 3, 3, 0>(b.data);
-		const simd::vector<T, 4> bzxyy = simd::shuffle<2, 0, 1, 1>(b.data);
-		const simd::vector<T, 4> byzxz = simd::shuffle<1, 2, 0, 2>(b.data);
+		const simd::vector<T, 4> axyzx = simd::shuffle<0, 1, 2, 0>(a.data, a.data);
+		const simd::vector<T, 4> ayzxy = simd::shuffle<1, 2, 0, 1>(a.data, a.data);
+		const simd::vector<T, 4> azxyz = simd::shuffle<2, 0, 1, 2>(a.data, a.data);
+		const simd::vector<T, 4> bwwwx = simd::shuffle<3, 3, 3, 0>(b.data, b.data);
+		const simd::vector<T, 4> bzxyy = simd::shuffle<2, 0, 1, 1>(b.data, b.data);
+		const simd::vector<T, 4> byzxz = simd::shuffle<1, 2, 0, 2>(b.data, b.data);
 		// Data dependency on 1 and 2, do them first
 		const simd::vector<T, 4> mul1 = simd::mul(axyzx, bwwwx);
 		const simd::vector<T, 4> mul2 = simd::mul(ayzxy, bzxyy);
