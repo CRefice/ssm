@@ -17,10 +17,13 @@ struct access_impl<float, 4, N>
 #if SSM_ARCH & SSM_ARCH_SSE4_BIT
 		return _mm_insert_ps(vec, _mm_set_ss(val), N * 0x10);
 #else
+		// Swap first and Nth element
 		const f128 shuf1 = _mm_shuffle_ps(vec, vec, (0xE4 | N) & ~(3 << (2 * N)));
+		// Move new element in first position
 		const f128 single = _mm_set_ss(val);
+		// Swap again
 		const f128 mov = _mm_move_ss(shuf1, single);
-		return _mm_shuffle_ps(vec, vec, (0xE4 | N) & ~(3 << (2 * N)));
+		return _mm_shuffle_ps(mov, mov, (0xE4 | N) & ~(3 << (2 * N)));
 #endif
 	}
 
