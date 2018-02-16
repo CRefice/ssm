@@ -1,5 +1,5 @@
 #define CATCH_CONFIG_MAIN
-#include "catch.hpp"
+#include <catch.hpp>
 
 #include <ssm/vector.hpp>
 
@@ -7,7 +7,7 @@ bool epsilon_compare(float a, float b, float epsilon) {
 	return std::abs(a - b) < epsilon;
 }
 
-TEST_CASE( "vector constructors", "[constructors]" ) {
+TEST_CASE( "constructors", "[vector]" ) {
 	ssm::vec4 vec;
 
 	SECTION( "default constructor" ) {
@@ -32,15 +32,38 @@ TEST_CASE( "vector constructors", "[constructors]" ) {
 		REQUIRE(vec.z == 2.0f);
 		REQUIRE(vec.w == 1.0f);
 	}
+}
+
+TEST_CASE("member getters-setters", "[vector]") {
+	ssm::vec4 vec(1.0f, 2.0f, 3.0f, 4.0f);
+	vec.x = 11.0f;
+	REQUIRE(vec.x == 11.0f);
+	vec.y = 12.0f;
+	REQUIRE(vec.y == 12.0f);
+	vec.z = 13.0f;
+	REQUIRE(vec.z == 13.0f);
+	vec.w = 14.0f;
+	REQUIRE(vec.w == 14.0f);
+}
+
+TEST_CASE( "operations", "[vector]" ) {
+	ssm::vec4 vec;
 
 	SECTION( "equality comparisons" ) {
 		REQUIRE(vec == vec);
 		ssm::vec4 vec_2 (10.0f);
 		REQUIRE(vec != vec_2);
 		REQUIRE(vec_2 == vec_2);
+
+		vec_2 = vec;
+		REQUIRE(vec == vec_2);
+		vec_2.w = 5.0f;
+		REQUIRE(vec != vec_2);
 	}
 
-	SECTION( "vector length" ) {
+	SECTION( "length" ) {
+		ssm::vec4 vec;
+
 		vec = ssm::vec4(1.0f, 0.0f, 0.0f, 0.0f);
 		REQUIRE(ssm::sqlength(vec) == 1.0f);
 		REQUIRE(ssm::length(vec) == 1.0f);
