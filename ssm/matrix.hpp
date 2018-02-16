@@ -73,10 +73,26 @@ inline vector<T, M> operator*(const matrix<T, M, N>& mat, const vector<T, N>& ve
 	return vec * mat;
 }
 
+template <typename T, int M, int N>
+inline matrix<T, M, N>& operator*=(matrix<T, M, N>& mat, T val) {
+	detail::unroll<0, N>::mul(mat, ssm::vector<T, M>(val));
+	return mat;
+}
+
 template <typename T, int N>
 inline vector<T, N>& operator*=(vector<T, N>& vec, const matrix<T, N, N>& mat) {
 	vec = detail::mat_unroll<0, N>::mul(vec, mat);
 	return vec;
+}
+
+template <typename T, int M, int N>
+inline matrix<T, M, N> operator*(matrix<T, M, N> mat, T val) {
+	return mat *= val;
+}
+
+template <typename T, int M, int N>
+inline matrix<T, M, N> operator*(T val, matrix<T, M, N> mat) {
+	return mat *= val;
 }
 
 template <typename T, int M, int N, int P>
@@ -90,6 +106,17 @@ template <typename T, int N>
 inline matrix<T, N, N>& operator*=(matrix<T, N, N>& a, const matrix<T, N, N> b) {
 	a = a * b;
 	return a;
+}
+
+template <typename T, int M, int N>
+inline matrix<T, M, N>& operator/=(matrix<T, M, N>& mat, T val) {
+	detail::unroll<0, N>::div(mat, ssm::vector<T, M>(val));
+	return mat;
+}
+
+template <typename T, int M, int N>
+inline matrix<T, M, N> operator/(matrix<T, M, N> mat, T val) {
+	return mat /= val;
 }
 
 //----------------------------------------------

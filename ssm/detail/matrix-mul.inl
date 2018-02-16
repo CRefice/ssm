@@ -15,7 +15,7 @@ struct mat_unroll
 
 	template <typename T, int M, int N, int P>
 	static inline void mul(matrix<T, M, P>& ret, const matrix<T, M, N>& a, const matrix<T, N, P>& b) {
-		ret[Start] = mat_unroll<0, N>::mul(b[Start], a);
+		ret[Start] = mat_unroll<0, N>::mul(a[Start], b);
 		next::mul(ret, a, b);
 	}
 };
