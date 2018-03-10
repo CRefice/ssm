@@ -115,47 +115,47 @@ inline vector<T, N>& operator/=(vector<T, N>& a, T b) {
 template <template <class, int> class A,
 				 template <class, int> class B,
 				 typename T, int N>
-inline vector<T, N> operator+(A<T, N> a, const B<T, N>& b) {
-	return static_cast<vector<T, N>&>(a) += b;
+inline vector<T, N> operator+(const A<T, N>& a, const B<T, N>& b) {
+	return static_cast<vector<T, N>>(a) += b;
 }
 
 template <template <class, int> class A,
 				 template <class, int> class B,
 				 typename T, int N>
-inline vector<T, N> operator-(A<T, N> a, const B<T, N>& b) {
-	return static_cast<vector<T, N>&>(a) -= b;
+inline vector<T, N> operator-(const A<T, N>& a, const B<T, N>& b) {
+	return static_cast<vector<T, N>>(a) -= b;
 }
 
 template <template <class, int> class A,
 				 template <class, int> class B,
 				 typename T, int N>
-inline vector<T, N> operator*(A<T, N> a, const B<T, N>& b) {
-	return static_cast<vector<T, N>&>(a) *= b;
+inline vector<T, N> operator*(const A<T, N>& a, const B<T, N>& b) {
+	return static_cast<vector<T, N>>(a) *= b;
 }
 
 template <template <class, int> class A,
 	typename T, int N>
-inline vector<T, N> operator*(A<T, N> a, T b) {
-	return static_cast<vector<T, N>&>(a) *= b;
+inline vector<T, N> operator*(const A<T, N>& a, T b) {
+	return static_cast<vector<T, N>>(a) *= b;
 }
 
 template <template <class, int> class A,
 	typename T, int N>
-inline vector<T, N> operator*(T a, A<T, N> b) {
+inline vector<T, N> operator*(T a, const A<T, N>& b) {
 	return b * a;
 }
 
 template <template <class, int> class A,
 				 template <class, int> class B,
 				 typename T, int N>
-inline vector<T, N> operator/(A<T, N> a, const B<T, N>& b) {
-	return static_cast<vector<T, N>&>(a) /= b;
+inline vector<T, N> operator/(const A<T, N>& a, const B<T, N>& b) {
+	return static_cast<vector<T, N>>(a) /= b;
 }
 
 template <template <class, int> class A,
 	typename T, int N>
-inline vector<T, N> operator/(A<T, N> a, T b) {
-	return static_cast<vector<T, N>&>(a) /= b;
+inline vector<T, N> operator/(const A<T, N>& a, T b) {
+	return static_cast<vector<T, N>>(a) /= b;
 }
 
 template <template <class, int> class Vec, typename T, int N>

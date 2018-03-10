@@ -82,7 +82,7 @@ inline f128 div(f128 a, f128 b) {
 template <bool X, bool Y, bool Z, bool W>
 inline f128 negate(f128 vec) {
 	const f128 sign = _mm_set_ss(-0.f);
-	const f128 shuf = _mm_shuffle_ps(vec, vec, (!W << 6) | (!Z << 4) | (!Y << 2) | !X);
+	const f128 shuf = _mm_shuffle_ps(sign, sign, (!W << 6) | (!Z << 4) | (!Y << 2) | !X);
 	return _mm_xor_ps(vec, shuf);
 }
 
