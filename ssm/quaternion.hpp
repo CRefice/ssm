@@ -11,11 +11,11 @@ struct quaternion : detail::vector_data<T, 4>
 	using detail::vector_data<T, 4>::vector_data;
 
 	const T& operator[](size_t index) const {
-		assert(index < N);
+		assert(index < 4);
 		return *(data_ptr(*this) + index);
 	}
 	T& operator[](size_t index) {
-		assert(index < N);
+		assert(index < 4);
 		return *(data_ptr(*this) + index);
 	}
 };
@@ -27,11 +27,11 @@ struct unit_quaternion : detail::vector_data<T, 4>
 	operator quaternion<T>() const { return quaternion<T>(this->data); }
 
 	const T& operator[](size_t index) const {
-		assert(index < N);
+		assert(index < 4);
 		return *(data_ptr(*this) + index);
 	}
 	T& operator[](size_t index) {
-		assert(index < N);
+		assert(index < 4);
 		return *(data_ptr(*this) + index);
 	}
 };
@@ -115,27 +115,31 @@ template <template <class> class A,
 				 template <class> class B,
 				 typename T>
 inline quaternion<T> operator+(const A<T>& a, const B<T>& b) {
-	return static_cast<quaternion<T>>(a) += b;
+	quaternion<T> ret(a);
+	return ret += b;
 }
 
 template <template <class> class A,
 				 template <class> class B,
 				 typename T>
 inline quaternion<T> operator-(const A<T>& a, const B<T>& b) {
-	return static_cast<quaternion<T>>(a) -= b;
+	quaternion<T> ret(a);
+	return ret -= b;
 }
 
 template <template <class> class A,
 				 template <class> class B,
 				 typename T>
 inline quaternion<T> operator*(const A<T>& a, const B<T>& b) {
-	return static_cast<quaternion<T>>(a) *= b;
+	quaternion<T> ret(a);
+	return ret *= b;
 }
 
 template <template <class> class A,
 	typename T>
 inline quaternion<T> operator*(const A<T>& a, T b) {
-	return static_cast<quaternion<T>>(a) *= b;
+	quaternion<T> ret(a);
+	return ret *= b;
 }
 
 template <template <class> class A,
@@ -147,7 +151,8 @@ inline quaternion<T> operator*(T a, const A<T>& b) {
 template <template <class> class A,
 	typename T>
 inline quaternion<T> operator/(const A<T>& a, T b) {
-	return static_cast<quaternion<T>>(a) /= b;
+	quaternion<T> ret(a);
+	return ret /= b;
 }
 
 template <template <class> class Quat, typename T>

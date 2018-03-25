@@ -116,27 +116,31 @@ template <template <class, int> class A,
 				 template <class, int> class B,
 				 typename T, int N>
 inline vector<T, N> operator+(const A<T, N>& a, const B<T, N>& b) {
-	return static_cast<vector<T, N>>(a) += b;
+	vector<T, N> ret(a);
+	return ret += b;
 }
 
 template <template <class, int> class A,
 				 template <class, int> class B,
 				 typename T, int N>
 inline vector<T, N> operator-(const A<T, N>& a, const B<T, N>& b) {
-	return static_cast<vector<T, N>>(a) -= b;
+	vector<T, N> ret(a);
+	return ret -= b;
 }
 
 template <template <class, int> class A,
 				 template <class, int> class B,
 				 typename T, int N>
 inline vector<T, N> operator*(const A<T, N>& a, const B<T, N>& b) {
-	return static_cast<vector<T, N>>(a) *= b;
+	vector<T, N> ret(a);
+	return ret *= b;
 }
 
 template <template <class, int> class A,
 	typename T, int N>
 inline vector<T, N> operator*(const A<T, N>& a, T b) {
-	return static_cast<vector<T, N>>(a) *= b;
+	vector<T, N> ret(a);
+	return ret *= b;
 }
 
 template <template <class, int> class A,
@@ -149,13 +153,15 @@ template <template <class, int> class A,
 				 template <class, int> class B,
 				 typename T, int N>
 inline vector<T, N> operator/(const A<T, N>& a, const B<T, N>& b) {
-	return static_cast<vector<T, N>>(a) /= b;
+	vector<T, N> ret(a);
+	return ret /= b;
 }
 
 template <template <class, int> class A,
 	typename T, int N>
-inline vector<T, N> operator/(const A<T, N>& a, T b) {
-	return static_cast<vector<T, N>>(a) /= b;
+inline vector<T, N> operator/(A<T, N> a, T b) {
+	vector<T, N> ret(a);
+	return ret /= b;
 }
 
 template <template <class, int> class Vec, typename T, int N>
