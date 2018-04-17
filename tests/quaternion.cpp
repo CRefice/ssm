@@ -12,7 +12,7 @@ TEST_CASE( "operations", "[quaternion]" ) {
 
 	SECTION( "equality comparisons" ) {
 		REQUIRE(q == q);
-		ssm::quat q2 (10.0f);
+		ssm::quat q2(10.0f);
 		REQUIRE(q != q2);
 		REQUIRE(q2 == q2);
 

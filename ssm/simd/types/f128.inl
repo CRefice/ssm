@@ -53,14 +53,12 @@ struct make_vector<float, 4>
 	using type = f128;
 };
 
-template <>
-inline f128 set_vector<float>(float a, float b, float c, float d) {
-	return _mm_set_ps(d, c, b, a);
+inline void assign(f128& vec, float a, float b, float c, float d) {
+	vec = _mm_set_ps(d, c, b, a);
 }
 
-template <>
-inline f128 set_wide<float, 4>(float a) {
-	return _mm_set1_ps(a);
+inline void fill(f128& vec, float a) {
+	vec = _mm_set1_ps(a);
 }
 
 inline f128 add(f128 a, f128 b) {

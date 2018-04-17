@@ -9,20 +9,31 @@ bool epsilon_compare(float a, float b, float epsilon) {
 
 TEST_CASE( "constructors", "[vector]" ) {
 	ssm::vec4 vec;
+	ssm::vec3 vec3;
 
 	SECTION( "default constructor" ) {
 		REQUIRE(vec.x == 0.0f);
 		REQUIRE(vec.y == 0.0f);
 		REQUIRE(vec.z == 0.0f);
 		REQUIRE(vec.w == 0.0f);
+
+		REQUIRE(vec3.x == 0.0f);
+		REQUIRE(vec3.y == 0.0f);
+		REQUIRE(vec3.z == 0.0f);
 	}
 
 	SECTION( "one-argument constructor" ) {
 		vec = ssm::vec4(5.0f);
+		vec3 = ssm::vec3(5.0f);
+
 		REQUIRE(vec.x == 5.0f);
 		REQUIRE(vec.y == 5.0f);
 		REQUIRE(vec.z == 5.0f);
 		REQUIRE(vec.w == 5.0f);
+
+		REQUIRE(vec3.x == 5.0f);
+		REQUIRE(vec3.y == 5.0f);
+		REQUIRE(vec3.z == 5.0f);
 	}
 
 	SECTION( "four-argument constructor" ) {
@@ -94,7 +105,7 @@ TEST_CASE( "operations", "[vector]" ) {
 		REQUIRE(epsilon_compare(cross.x, 0.0f, 1e-6f));
 		REQUIRE(epsilon_compare(cross.y, 0.0f, 1e-6f));
 		REQUIRE(epsilon_compare(cross.z, 1.0f, 1e-6f));
-
+		
 		vec_1 = ssm::vec3(1.0f, 2.0f, 3.0f);
 		vec_2 = ssm::vec3(1.0f, 5.0f, 7.0f);
 		cross = ssm::cross(vec_1, vec_2);
@@ -111,9 +122,19 @@ TEST_CASE( "operations", "[vector]" ) {
 		REQUIRE(epsilon_compare(norm.y, 0.5f, 1e-6f));
 		REQUIRE(epsilon_compare(norm.z, 0.5f, 1e-6f));
 		REQUIRE(epsilon_compare(norm.w, 0.5f, 1e-6f));
+		auto dot = ssm::dot(vec, norm);
+		auto uq = norm / dot;
 	}
 
-	SECTION( "arithmetic operators" ) {
+	SECTION("arithmetic operators") {
+		auto vec3 = ssm::vec3(3.0f, 2.0f, 1.0f);
+		vec3 += ssm::vec3(1.0f, 2.0f, 3.0f);
+		REQUIRE(vec3 == ssm::vec3(4.0f, 4.0f, 4.0f));
+		
+		auto vec5 = ssm::vector<float, 5>(3.0f, 2.0f, 1.0f, 2.0f, 3.0f);
+		auto vec5_2 = vec5 + ssm::vector<float, 5>(3.0f, 2.0f, 1.0f, 2.0f, 3.0f);
+		REQUIRE(vec5_2 == 2.0f * vec5);
+
 		vec = ssm::vec4(1.0f, 2.0f, 3.0f, 4.0f);
 		auto vec_2 = ssm::vec4(4.0f, 3.0f, 2.0f, 1.0f);
 

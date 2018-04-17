@@ -43,13 +43,12 @@ struct make_vector<double, 2>
 	using type = d128;
 };
 
-inline d128 set_vector(double a, double b) {
-	return _mm_set_pd(b, a);
+inline void assign(d128& vec, double a, double b) {
+	vec = _mm_set_pd(b, a);
 }
 
-template <>
-inline d128 set_wide<double, 2>(double a) {
-	return _mm_set1_pd(a);
+inline void fill(d128& vec, double a) {
+	vec = _mm_set1_pd(a);
 }
 
 inline d128 add(d128 a, d128 b) {

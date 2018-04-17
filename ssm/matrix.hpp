@@ -9,10 +9,10 @@ struct matrix
 {
 	using value_type = vector<T, M>;
 
-	matrix() = default;
-	matrix(T val) {
+	inline matrix() = default;
+	inline matrix(T val) {
 		for (int i = 0; i < N; ++i)
-			data[i] = val;
+			data[i] = vector<T, M>(val);
 	}
 
 	vector<T, M>& operator[](int index) {
@@ -24,24 +24,27 @@ struct matrix
 		return data[index];
 	}
 
-	vector<T, M> data[N] = { 0.f };
+	std::array<vector<T, M>, N> data = {};
 };
 
 template <typename T, int M, int N>
 inline matrix<T, M, N> operator-(matrix<T, M, N> mat) {
-	detail::unroll<0, N>::negate(mat);
+	for (int i = 0; i < N; ++i)
+		mat[i] = -mat[i];
 	return mat;
 }
 
 template <typename T, int M, int N>
 inline matrix<T, M, N>& operator+=(matrix<T, M, N>& a, const matrix<T, M, N>& b) {
-	detail::unroll<0, N>::add(a, b);
+	for (int i = 0; i < N; ++i)
+		a[i] += b[i];
 	return a;
 }
 
 template <typename T, int M, int N>
 inline matrix<T, M, N>& operator-=(matrix<T, M, N>& a, const matrix<T, M, N>& b) {
-	detail::unroll<0, N>::sub(a, b);
+	for (int i = 0; i < N; ++i)
+		a[i] -= b[i];
 	return a;
 }
 
@@ -50,10 +53,13 @@ inline matrix<T, M, N> operator+(matrix<T, M, N> a, const matrix<T, M, N>& b) { 
 template <typename T, int M, int N>
 inline matrix<T, M, N> operator-(matrix<T, M, N> a, const matrix<T, M, N>& b) { return a -= b; }
 
-
 template <typename T, int M, int N>
 inline bool operator==(const matrix<T, M, N>& a, const matrix<T, M, N>& b) {
-	return detail::unroll<0, N>::equals(a, b);
+	for (int i = 0; i < N; ++i) {
+		if (a[i] != b[i])
+			return false;
+	}
+	return true;
 }
 
 template <typename T, int M, int N>
@@ -75,7 +81,8 @@ inline vector<T, M> operator*(const matrix<T, M, N>& mat, const vector<T, N>& ve
 
 template <typename T, int M, int N>
 inline matrix<T, M, N>& operator*=(matrix<T, M, N>& mat, T val) {
-	detail::unroll<0, N>::mul(mat, ssm::vector<T, M>(val));
+	for (int i = 0; i < N; ++i)
+		mat[i] *= val;
 	return mat;
 }
 
@@ -110,7 +117,8 @@ inline matrix<T, N, N>& operator*=(matrix<T, N, N>& a, const matrix<T, N, N> b) 
 
 template <typename T, int M, int N>
 inline matrix<T, M, N>& operator/=(matrix<T, M, N>& mat, T val) {
-	detail::unroll<0, N>::div(mat, ssm::vector<T, M>(val));
+	for (int i = 0; i < N; ++i)
+		mat[i] /= val;
 	return mat;
 }
 

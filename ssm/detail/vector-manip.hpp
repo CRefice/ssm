@@ -8,113 +8,132 @@
 // It's a complicated mess, but it should be completely transparent to the end user
 #include <cmath>
 
-#include "loop-unroll.hpp"
-#include "vector-data.hpp"
+#include "generic-vec.hpp"
 #include "../simd/types.hpp"
 
 namespace ssm
 {
 namespace detail
 {
-template <typename T, int N, typename = void>
+template <typename T, std::size_t N, typename = void>
 struct vec_impl
 {
-	static inline T dot(const vector_data<T, N>& a, const vector_data<T, N>& b) {
-		return unroll<0, N>::dot(a.data, b.data);
+	static inline T dot(const generic_vec<T, N>& a, const generic_vec<T, N>& b) {
+		T ret = T(0);
+		for (int i = 0; i < N; ++i)
+			ret += a.data[i] * b.data[i];
+		return ret;
 	}
 
-	static inline void normalize(vector_data<T, N>& vec) {
-		T length = static_cast<T>(std::sqrt(unroll<0, N>::dot(vec.data, vec.data)));
-		unroll<0, N>::div(vec.data, length);
+	static inline void normalize(generic_vec<T, N>& vec) {
+		T length = vec_impl<T, N>::dot(vec, vec);
+		for (int i = 0; i < n; ++i)
+			vec.data[i] /= length;
 	}
 
-	static inline void add(vector_data<T, N>& a, const vector_data<T, N>& b) {
-		unroll<0, N>::add(a.data, b.data);
+	static inline void add(generic_vec<T, N>& a, const generic_vec<T, N>& b) {
+		for (int i = 0; i < N; ++i)
+			a.data[i] += b.data[i];
 	}
 
-	static inline void sub(vector_data<T, N>& a, const vector_data<T, N>& b) {
-		unroll<0, N>::sub(a.data, b.data);
+	static inline void sub(generic_vec<T, N>& a, const generic_vec<T, N>& b) {
+		for (int i = 0; i < N; ++i)
+			a.data[i] -= b.data[i];
 	}
 
-	static inline void mul(vector_data<T, N>& a, const vector_data<T, N>& b) {
-		unroll<0, N>::mul(a.data, b.data);
+	static inline void mul(generic_vec<T, N>& a, const generic_vec<T, N>& b) {
+		for (int i = 0; i < N; ++i)
+			a.data[i] *= b.data[i];
 	}
 
-	static inline void mul(vector_data<T, N>& a, T b) {
-		unroll<0, N>::mul(a.data, b);
+	static inline void mul(generic_vec<T, N>& a, T b) {
+		for (int i = 0; i < N; ++i)
+			a.data[i] *= b;
 	}
 
-	static inline void div(vector_data<T, N>& a, const vector_data<T, N>& b) {
-		unroll<0, N>::div(a.data, b.data);
+	static inline void div(generic_vec<T, N>& a, const generic_vec<T, N>& b) {
+		for (int i = 0; i < N; ++i)
+			a.data[i] /= b.data[i];
 	}
 
-	static inline void div(vector_data<T, N>& a, T b) {
-		unroll<0, N>::div(a.data, b);
+	static inline void div(generic_vec<T, N>& a, T b) {
+		for (int i = 0; i < N; ++i)
+			a.data[i] /= b;
 	}
 
-	static inline void negate(vector_data<T, N>& vec) {
-		unroll<0, N>::negate(vec.data);
+	static inline void negate(generic_vec<T, N>& vec) {
+		for (int i = 0; i < N; ++i)
+			a.data[i] = -a.data[i];
 	}
 
-	static inline void quat_mul(vector_data<T, N>& a, const vector_data<T, N>& b) {
+	static inline void quat_mul(generic_vec<T, 4>& a, const generic_vec<T, 4>& b) {
 		a.x = a.w * b.x + a.x * b.w + a.y * b.z - a.z * b.y;
 		a.y = a.w * b.y - a.x * b.z + a.y * b.w + a.z * b.x;
 		a.z = a.w * b.z + a.x * b.y - a.y * b.x + a.z * b.w;
 		a.w = a.w * b.w - a.x * b.x - a.y * b.y - a.z * b.z;
 	}
 
-	static inline void quat_conjugate(vector_data<T, 4>& a) {
+	static inline void quat_conjugate(generic_vec<T, 4>& a) {
 		// Negate all members but the real part (w)
-		unroll<0, 3>::negate(a.data);
+		for (int i = 0; i < 3; ++i)
+			a.data[i] = -a.data[i];
 	}
 
-	static inline bool equals(const vector_data<T, N>& a, const vector_data<T, N>& b) {
-		return unroll<0, N>::equals(a.data, b.data);
+	static inline bool equals(const generic_vec<T, N>& a, const generic_vec<T, N>& b) {
+		for (int i = 0; i < 3; ++i) {
+			if (a.data[i] != b.data[i])
+				return false;
+		}
+		return true;
 	}
 };
 
-template <typename T, int N>
+template <typename T, std::size_t N>
 struct vec_impl<T, N, enable_if_t<simd::is_simd<T, N>::value, void>>
 {
-	static inline T dot(const vector_data<T, N>& a, const vector_data<T, N>& b) {
+	static inline T dot(const generic_vec<T, N>& a, const generic_vec<T, N>& b) {
 		return simd::get_element<T, N, 0>(simd::dot(a.data, b.data));
 	}
 
-	static inline void normalize(vector_data<T, N>& vec) {
+	static inline void normalize(generic_vec<T, N>& vec) {
 		const simd::vector<T, N> sqlen = simd::dot(vec.data, vec.data);
 		const simd::vector<T, N> rsqrt = simd::rsqrt(sqlen);
 		vec.data = simd::mul(vec.data, rsqrt);
 	}
 
-	static inline void add(vector_data<T, N>& a, const vector_data<T, N>& b) {
+	static inline void add(generic_vec<T, N>& a, const generic_vec<T, N>& b) {
 		a.data = simd::add(a.data, b.data);
 	}
 
-	static inline void sub(vector_data<T, N>& a, const vector_data<T, N>& b) {
+	static inline void sub(generic_vec<T, N>& a, const generic_vec<T, N>& b) {
 		a.data = simd::sub(a.data, b.data);
 	}
 
-	static inline void mul(vector_data<T, N>& a, const vector_data<T, N>& b) {
+	static inline void mul(generic_vec<T, N>& a, const generic_vec<T, N>& b) {
 		a.data = simd::mul(a.data, b.data);
 	}
 
-	static inline void mul(vector_data<T, N>& a, T b) {
-		a.data = simd::mul(a.data, simd::set_wide<T, N>(b));
+	static inline void mul(generic_vec<T, N>& a, T b) {
+		simd::vector<T, N> mul;
+		simd::fill(mul, b);
+		a.data = simd::mul(a.data, mul);
 	}
 
-	static inline void div(vector_data<T, N>& a, const vector_data<T, N>& b) {
+	static inline void div(generic_vec<T, N>& a, const generic_vec<T, N>& b) {
 		a.data = simd::div(a.data, b.data);
 	}
 
-	static inline void div(vector_data<T, N>& a, T b) {
-		a.data = simd::div(a.data, simd::set_wide<T, N>(b));
+	static inline void div(generic_vec<T, N>& a, T b) {
+		simd::vector<T, N> div;
+		simd::fill(div, b);
+		a.data = simd::div(a.data, div);
 	}
 
-	static inline void negate(vector_data<T, N>& a) {
+	static inline void negate(generic_vec<T, N>& a) {
 		a.data = simd::negate(a.data);
 	}
 
-	static inline void quat_mul(vector_data<T, 4>& a, const vector_data<T, 4>& b) {
+	static inline void quat_mul(generic_vec<T, 4>& a, const generic_vec<T, 4>& b) {
 		const simd::vector<T, 4> awwww = simd::shuffle<3>(a.data);
 		const simd::vector<T, 4> axyzx = simd::shuffle<0, 1, 2, 0>(a.data, a.data);
 		const simd::vector<T, 4> ayzxy = simd::shuffle<1, 2, 0, 1>(a.data, a.data);
@@ -133,11 +152,11 @@ struct vec_impl<T, N, enable_if_t<simd::is_simd<T, N>::value, void>>
 		a.data = simd::add(sub0, sign);
 	}
 
-	static inline void quat_conjugate(vector_data<T, 4>& a) {
+	static inline void quat_conjugate(generic_vec<T, 4>& a) {
 		a.data = simd::negate<1, 1, 1, 0>(a.data);
 	}
 
-	static inline bool equals(const vector_data<T, N>& a, const vector_data<T, N>& b) {
+	static inline bool equals(const generic_vec<T, N>& a, const generic_vec<T, N>& b) {
 		return simd::equals(a.data, b.data);
 	}
 };

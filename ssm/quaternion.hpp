@@ -6,34 +6,18 @@
 namespace ssm
 {
 template <typename T>
-struct quaternion : detail::vector_data<T, 4>
+struct unit_quaternion : generic_vec<T, 4>
 {
-	using detail::vector_data<T, 4>::vector_data;
-
-	const T& operator[](size_t index) const {
-		assert(index < N);
-		return *(data_ptr(*this) + index);
-	}
-	T& operator[](size_t index) {
-		assert(index < N);
-		return *(data_ptr(*this) + index);
-	}
+	using generic_vec<T, 4>::generic_vec;
 };
 
 template <typename T>
-struct unit_quaternion : detail::vector_data<T, 4>
+struct quaternion : generic_vec<T, 4>
 {
-	using detail::vector_data<T, 4>::vector_data;
-	operator quaternion<T>() const { return quaternion<T>(this->data); }
+	quaternion<T>() = default;
+	quaternion<T>(const unit_quaternion<T>& uq) : generic_vec<T, 4>(uq.data) {}
 
-	const T& operator[](size_t index) const {
-		assert(index < N);
-		return *(data_ptr(*this) + index);
-	}
-	T& operator[](size_t index) {
-		assert(index < N);
-		return *(data_ptr(*this) + index);
-	}
+	using generic_vec<T, 4>::generic_vec;
 };
 
 template <template <class> class A,
