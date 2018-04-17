@@ -15,8 +15,7 @@ template <typename T>
 struct quaternion : generic_vec<T, 4>
 {
 	quaternion<T>() = default;
-	quaternion<T>(const unit_quaternion<T>& uq) : generic_vec<T, 4>(uq.data) {}
-
+	quaternion<T>(const unit_quaternion<T>& u) : generic_vec<T, 4>(u.data) {}
 	using generic_vec<T, 4>::generic_vec;
 };
 
@@ -99,27 +98,31 @@ template <template <class> class A,
 				 template <class> class B,
 				 typename T>
 inline quaternion<T> operator+(const A<T>& a, const B<T>& b) {
-	return static_cast<quaternion<T>>(a) += b;
+	quaternion<T> ret(a);
+	return ret += b;
 }
 
 template <template <class> class A,
 				 template <class> class B,
 				 typename T>
 inline quaternion<T> operator-(const A<T>& a, const B<T>& b) {
-	return static_cast<quaternion<T>>(a) -= b;
+	quaternion<T> ret(a);
+	return ret -= b;
 }
 
 template <template <class> class A,
 				 template <class> class B,
 				 typename T>
 inline quaternion<T> operator*(const A<T>& a, const B<T>& b) {
-	return static_cast<quaternion<T>>(a) *= b;
+	quaternion<T> ret(a);
+	return ret *= b;
 }
 
 template <template <class> class A,
 	typename T>
 inline quaternion<T> operator*(const A<T>& a, T b) {
-	return static_cast<quaternion<T>>(a) *= b;
+	quaternion<T> ret(a);
+	return ret *= b;
 }
 
 template <template <class> class A,
@@ -131,7 +134,8 @@ inline quaternion<T> operator*(T a, const A<T>& b) {
 template <template <class> class A,
 	typename T>
 inline quaternion<T> operator/(const A<T>& a, T b) {
-	return static_cast<quaternion<T>>(a) /= b;
+	quaternion<T> ret(a);
+	return ret /= b;
 }
 
 template <template <class> class Quat, typename T>
