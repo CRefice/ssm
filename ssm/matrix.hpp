@@ -9,8 +9,9 @@ struct matrix
 {
 	using value_type = vector<T, M>;
 
-	inline matrix() = default;
-	inline matrix(T val) {
+	matrix() = default;
+
+	explicit matrix(T val) {
 		for (int i = 0; i < N; ++i)
 			data[i] = vector<T, M>(val);
 	}

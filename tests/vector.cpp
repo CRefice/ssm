@@ -98,6 +98,13 @@ TEST_CASE( "operations", "[vector]" ) {
 		REQUIRE(epsilon_compare(ssm::dot(vec_1, vec_2), 17.5f, 1e-6f));
 	}
 
+	SECTION( "distance" ) {
+		auto vec_1 = ssm::vec3(7.0f, 4.0f, 3.0f);
+		auto vec_2 = ssm::vec3(17.0f, 6.0f, 2.0f);
+		REQUIRE(epsilon_compare(ssm::distance(vec_1, vec_1), 0.0f, 1e-6f));
+		REQUIRE(epsilon_compare(ssm::distance(vec_1, vec_2), 10.246951f, 1e-6f));
+	}
+
 	SECTION( "cross product" ) {
 		auto vec_1 = ssm::vec3(1.0f, 0.0f, 0.0f);
 		auto vec_2 = ssm::vec3(0.0f, 1.0f, 0.0f);

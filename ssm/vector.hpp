@@ -39,6 +39,13 @@ inline T length(const Vec<T, N>& vec) {
 template <template <class, std::size_t> class A,
 				 template <class, std::size_t> class B,
 				 typename T, std::size_t N>
+inline T distance(const A<T, N>& a, const B<T, N>& b) {
+	return length(a - b);
+}
+
+template <template <class, std::size_t> class A,
+				 template <class, std::size_t> class B,
+				 typename T, std::size_t N>
 inline vector<T, N> cross(const A<T, N>& a, const B<T, N>& b) {
 	static_assert(N == 3, "Cross product is only defined for 3D vectors");
 	return vector<T, N>(

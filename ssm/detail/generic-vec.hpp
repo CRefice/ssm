@@ -24,7 +24,7 @@ struct generic_vec : simd::vector_data<T, N>
 	generic_vec() = default;
 
 	// Initialize all elments to val.
-	generic_vec(T val) { simd::fill(data, val); }
+	explicit generic_vec(T val) { simd::fill(data, val); }
 
 	// Initialize the vector all at once.
 	generic_vec(simd::vector<T, N> vec) {
