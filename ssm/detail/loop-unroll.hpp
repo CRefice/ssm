@@ -49,7 +49,7 @@ struct unroll<End, End>
 	inline static void diagonal_assign(Arr& arr, const typename Arr::value_type& val) {}
 
 	template <typename Vec, typename Mat>
-	static inline typename Mat::value_type inner_product(Vec& vec, const Mat& mat) {}
+	static inline typename Mat::value_type inner_product(Vec& vec, const Mat& mat) { return {}; }
 };
 }
 }

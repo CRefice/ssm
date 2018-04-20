@@ -76,7 +76,6 @@ inline bool operator!=(const matrix<T, M, N>& a, const matrix<T, M, N>& b) {
 
 template <typename T, std::size_t M, std::size_t N>
 inline vector<T, M> operator*(const vector<T, N>& vec, const matrix<T, M, N>& mat) {
-	printf("lmao\n");
 	return detail::unroll<0, N>::inner_product(vec, mat);
 }
 
