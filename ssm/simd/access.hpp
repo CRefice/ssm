@@ -56,7 +56,7 @@ struct accessor
 	vector<T, N> vec;
 };
 
-template <typename T, int N>
+template <typename T, std::size_t N>
 struct vector_data
 {
 	vector<T, N> data = {};

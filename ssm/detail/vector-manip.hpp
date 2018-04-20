@@ -9,7 +9,6 @@
 #include <cmath>
 
 #include "generic-vec.hpp"
-#include "../simd/types.hpp"
 
 namespace ssm
 {
@@ -27,7 +26,7 @@ struct vec_impl
 
 	static inline void normalize(generic_vec<T, N>& vec) {
 		T length = vec_impl<T, N>::dot(vec, vec);
-		for (int i = 0; i < n; ++i)
+		for (int i = 0; i < N; ++i)
 			vec.data[i] /= length;
 	}
 
@@ -63,7 +62,7 @@ struct vec_impl
 
 	static inline void negate(generic_vec<T, N>& vec) {
 		for (int i = 0; i < N; ++i)
-			a.data[i] = -a.data[i];
+			vec.data[i] = -vec.data[i];
 	}
 
 	static inline void quat_mul(generic_vec<T, 4>& a, const generic_vec<T, 4>& b) {

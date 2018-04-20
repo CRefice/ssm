@@ -21,13 +21,13 @@ inline void fill(Arr& vec, T val) {
 	vec.fill(val);
 }
 
+template <typename Arr, std::size_t>
+inline void assign(Arr& vec) {}
+
 template <typename Arr, std::size_t I = 0, typename U, typename... Args>
 inline void assign(Arr& vec, U val, Args... args) {
 	vec[I] = val;
 	assign<Arr, I + 1, Args...>(vec, args...);
 }
-
-template <typename Arr, std::size_t>
-inline void assign(Arr& vec) {}
 }
 }

@@ -86,7 +86,7 @@ TEST_CASE("operations", "[matrix]") {
 		mat[3] = { 0.0f, 0.0f, 0.0f, 1.0f };
 
 		ssm::vec4 vec(1.0f, 2.0f, 3.0f, 4.0f);
-		REQUIRE(vec * mat == mat * vec);
+		REQUIRE((vec * mat) == (mat * vec));
 		auto vec_2 = vec;
 		vec_2 *= mat;
 		REQUIRE(vec_2 == mat * vec);
