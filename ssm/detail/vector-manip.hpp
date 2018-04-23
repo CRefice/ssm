@@ -19,49 +19,49 @@ struct vec_impl
 {
 	static inline T dot(const generic_vec<T, N>& a, const generic_vec<T, N>& b) {
 		T ret = T(0);
-		for (int i = 0; i < N; ++i)
+		for (std::size_t i = 0; i < N; ++i)
 			ret += a.data[i] * b.data[i];
 		return ret;
 	}
 
 	static inline void normalize(generic_vec<T, N>& vec) {
 		T length = vec_impl<T, N>::dot(vec, vec);
-		for (int i = 0; i < N; ++i)
+		for (std::size_t i = 0; i < N; ++i)
 			vec.data[i] /= length;
 	}
 
 	static inline void add(generic_vec<T, N>& a, const generic_vec<T, N>& b) {
-		for (int i = 0; i < N; ++i)
+		for (std::size_t i = 0; i < N; ++i)
 			a.data[i] += b.data[i];
 	}
 
 	static inline void sub(generic_vec<T, N>& a, const generic_vec<T, N>& b) {
-		for (int i = 0; i < N; ++i)
+		for (std::size_t i = 0; i < N; ++i)
 			a.data[i] -= b.data[i];
 	}
 
 	static inline void mul(generic_vec<T, N>& a, const generic_vec<T, N>& b) {
-		for (int i = 0; i < N; ++i)
+		for (std::size_t i = 0; i < N; ++i)
 			a.data[i] *= b.data[i];
 	}
 
 	static inline void mul(generic_vec<T, N>& a, T b) {
-		for (int i = 0; i < N; ++i)
+		for (std::size_t i = 0; i < N; ++i)
 			a.data[i] *= b;
 	}
 
 	static inline void div(generic_vec<T, N>& a, const generic_vec<T, N>& b) {
-		for (int i = 0; i < N; ++i)
+		for (std::size_t i = 0; i < N; ++i)
 			a.data[i] /= b.data[i];
 	}
 
 	static inline void div(generic_vec<T, N>& a, T b) {
-		for (int i = 0; i < N; ++i)
+		for (std::size_t i = 0; i < N; ++i)
 			a.data[i] /= b;
 	}
 
 	static inline void negate(generic_vec<T, N>& vec) {
-		for (int i = 0; i < N; ++i)
+		for (std::size_t i = 0; i < N; ++i)
 			vec.data[i] = -vec.data[i];
 	}
 
@@ -74,12 +74,12 @@ struct vec_impl
 
 	static inline void quat_conjugate(generic_vec<T, 4>& a) {
 		// Negate all members but the real part (w)
-		for (int i = 0; i < 3; ++i)
+		for (std::size_t i = 0; i < 3; ++i)
 			a.data[i] = -a.data[i];
 	}
 
 	static inline bool equals(const generic_vec<T, N>& a, const generic_vec<T, N>& b) {
-		for (int i = 0; i < 3; ++i) {
+		for (std::size_t i = 0; i < 3; ++i) {
 			if (a.data[i] != b.data[i])
 				return false;
 		}

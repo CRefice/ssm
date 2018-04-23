@@ -13,7 +13,7 @@ struct matrix
 	matrix() = default;
 
 	explicit matrix(T val) {
-		for (int i = 0; i < N; ++i)
+		for (std::size_t i = 0; i < N; ++i)
 			data[i] = vector<T, M>(val);
 	}
 
@@ -36,21 +36,21 @@ struct matrix
 
 template <typename T, std::size_t M, std::size_t N>
 inline matrix<T, M, N> operator-(matrix<T, M, N> mat) {
-	for (int i = 0; i < N; ++i)
+	for (std::size_t i = 0; i < N; ++i)
 		mat[i] = -mat[i];
 	return mat;
 }
 
 template <typename T, std::size_t M, std::size_t N>
 inline matrix<T, M, N>& operator+=(matrix<T, M, N>& a, const matrix<T, M, N>& b) {
-	for (int i = 0; i < N; ++i)
+	for (std::size_t i = 0; i < N; ++i)
 		a[i] += b[i];
 	return a;
 }
 
 template <typename T, std::size_t M, std::size_t N>
 inline matrix<T, M, N>& operator-=(matrix<T, M, N>& a, const matrix<T, M, N>& b) {
-	for (int i = 0; i < N; ++i)
+	for (std::size_t i = 0; i < N; ++i)
 		a[i] -= b[i];
 	return a;
 }
@@ -62,7 +62,7 @@ inline matrix<T, M, N> operator-(matrix<T, M, N> a, const matrix<T, M, N>& b) { 
 
 template <typename T, std::size_t M, std::size_t N>
 inline bool operator==(const matrix<T, M, N>& a, const matrix<T, M, N>& b) {
-	for (int i = 0; i < N; ++i) {
+	for (std::size_t i = 0; i < N; ++i) {
 		if (a[i] != b[i])
 			return false;
 	}
@@ -86,7 +86,7 @@ inline vector<T, M> operator*(const matrix<T, M, N>& mat, const vector<T, N>& ve
 
 template <typename T, std::size_t M, std::size_t N>
 inline matrix<T, M, N>& operator*=(matrix<T, M, N>& mat, T val) {
-	for (int i = 0; i < N; ++i)
+	for (std::size_t i = 0; i < N; ++i)
 		mat[i] *= val;
 	return mat;
 }
@@ -110,7 +110,7 @@ inline matrix<T, M, N> operator*(T val, matrix<T, M, N> mat) {
 template <typename T, std::size_t M, std::size_t N, std::size_t P>
 inline matrix<T, M, P> operator*(const matrix<T, M, N>& a, const matrix<T, N, P> b) {
 	matrix<T, M, P> ret;
-	for (int i = 0; i < M; ++i)
+	for (std::size_t i = 0; i < M; ++i)
 		ret[i] = a[i] * b;
 	return ret;
 }
@@ -123,7 +123,7 @@ inline matrix<T, N, N>& operator*=(matrix<T, N, N>& a, const matrix<T, N, N> b) 
 
 template <typename T, std::size_t M, std::size_t N>
 inline matrix<T, M, N>& operator/=(matrix<T, M, N>& mat, T val) {
-	for (int i = 0; i < N; ++i)
+	for (std::size_t i = 0; i < N; ++i)
 		mat[i] /= val;
 	return mat;
 }
