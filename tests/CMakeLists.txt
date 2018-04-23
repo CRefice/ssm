@@ -1,3 +1,14 @@
+string(
+    APPEND opts
+    "$<IF:$<CXX_COMPILER_ID:MSVC>,"
+        "/W3;$<$<CONFIG:RELEASE>:/O2>,"
+				"-Wall;"
+            "$<$<CONFIG:RELEASE>:-O3>"
+            "$<$<CXX_COMPILER_ID:Clang>:-stdlib=libc++>"
+    ">"
+)
+add_compile_options("${opts}")
+
 add_library(Catch INTERFACE)
 target_include_directories(Catch INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
 

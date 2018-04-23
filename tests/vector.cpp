@@ -129,8 +129,6 @@ TEST_CASE( "operations", "[vector]" ) {
 		REQUIRE(epsilon_compare(norm.y, 0.5f, 1e-6f));
 		REQUIRE(epsilon_compare(norm.z, 0.5f, 1e-6f));
 		REQUIRE(epsilon_compare(norm.w, 0.5f, 1e-6f));
-		auto dot = ssm::dot(vec, norm);
-		auto uq = norm / dot;
 	}
 
 	SECTION("arithmetic operators") {
