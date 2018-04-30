@@ -11,8 +11,8 @@ namespace ssm
 template <typename T, std::size_t N>
 inline vector<T, N + 1> homogenize(const vector<T, N>& vec) {
 	vector<T, N + 1> ret;
-	unroll<T, N>::assign(ret, vec);
-	ret.set<N>(T(1));
+	detail::unroll<0, N>::assign(ret, vec);
+	ret.template set<N>(T(1));
 	return ret;
 }
 
@@ -20,7 +20,7 @@ inline vector<T, N + 1> homogenize(const vector<T, N>& vec) {
 template <typename T, std::size_t N>
 inline matrix<T, N, N> identity() {
 	matrix<T, N, N> ret;
-	unroll<0, N>::diagonal_assign(ret, T(1));
+	detail::unroll<0, N>::diagonal_assign_val(ret, T(1));
 	return ret;
 }
 
@@ -35,23 +35,52 @@ inline matrix<T, N + 1, N + 1> translation(const vector<T, N>& pos) {
 
 template <typename T, std::size_t N>
 inline matrix<T, N, N> scaling(const vector<T, N>& s) {
-	auto ret = identity<T, N>();
-	unroll<0, N>::diagonal_assign(ret, s);
+	matrix<T, N, N> ret;
+	detail::unroll<0, N>::diagonal_assign_vec(ret, s);
 	return ret;
 }
 
+namespace detail
+{
+template <typename T, typename = void>
+struct transform_impl
+{
+static inline matrix<T, 4, 4> rotation(const unit_quaternion<T>& rot) {
+	matrix<T, 4, 4> ret;
+
+	ret[0].x = 1 - 2 * rot.y * rot.y - 2 * rot.z * rot.z;
+	ret[0].y = 2 * rot.x * rot.y + 2 * rot.w * rot.z;
+	ret[0].z = 2 * rot.x * rot.z - 2 * rot.w * rot.y;
+
+	ret[1].x = 2 * rot.x * rot.y - 2 * rot.w * rot.z;
+	ret[1].y = 1 - 2 * rot.x * rot.x - 2 * rot.z * rot.z;
+	ret[1].z = 2 * rot.y * rot.z - 2 * rot.w * rot.x;
+
+	ret[2].x = 2 * rot.x * rot.z + 2 * rot.w * rot.y;
+	ret[2].y = 2 * rot.y * rot.z + 2 * rot.w * rot.x;
+	ret[2].z = 1 - 2 * rot.x * rot.x - 2 * rot.y * rot.y;
+
+	return ret;
+}
+};
+
 template <typename T>
-inline matrix<T, 4, 4> rotation(const quaternion<T>& rot) {
+struct transform_impl<T, enable_if_t<simd::is_simd<T, 4>::value, void>>
+{
+static inline matrix<T, 4, 4> rotation(const unit_quaternion<T>& rot) {
 	const simd::vector<T, 4> wwww = simd::shuffle<3, 3, 3, 3>(rot.data);
 	const simd::vector<T, 4> xyzw = rot.data;
 	const simd::vector<T, 4> zxyw = simd::shuffle<2, 0, 1, 3>(rot.data);
 	const simd::vector<T, 4> yzxw = simd::shuffle<1, 2, 0, 3>(rot.data);
 
 	const simd::vector<T, 4> xyzw2 = simd::add(xyzw, xyzw);
-	const simd::vector<T, 4> zxyw2 = simd::shuffle<3, 1, 0, 2>(xyzw2);
-	const simd::vector<T, 4> yzxw2 = simd::shuffle<3, 0, 2, 1>(xyzw2);
-	
-	simd::vector<T, 4> tmp0 = simd::sub(simd::fill(1.f), simd::mul(yzxw2, yzxw));
+	const simd::vector<T, 4> zxyw2 = simd::shuffle<2, 0, 1, 3>(xyzw2);
+	const simd::vector<T, 4> yzxw2 = simd::shuffle<1, 2, 0, 3>(xyzw2);
+
+	simd::vector<T, 4> wide1;
+	simd::fill(wide1, T(1));
+
+	simd::vector<T, 4> tmp0 = simd::sub(wide1, simd::mul(yzxw2, yzxw));
 	tmp0 = simd::sub(tmp0, simd::mul(zxyw2, zxyw));
 
 	simd::vector<T, 4> tmp1 = simd::mul(yzxw2, xyzw);
@@ -60,54 +89,46 @@ inline matrix<T, 4, 4> rotation(const quaternion<T>& rot) {
 	simd::vector<T, 4> tmp2 = simd::mul(zxyw2, xyzw);
 	tmp2 = simd::sub(tmp2, simd::mul(yzxw2, wwww));
 
-	// There's probably a better, more politically correct way of doing this...
-	result[0].data = simd::load(
-			0.0f,
-			reinterpret_cast<float*>(&tmp2)[0],
-			reinterpret_cast<float*>(&tmp1)[0],
-			reinterpret_cast<float*>(&tmp0)[0]);
-
-	result[1].data = simd::load(
-			0.0f,
-			reinterpret_cast<float*>(&tmp1)[1],
-			reinterpret_cast<float*>(&tmp0)[1],
-			reinterpret_cast<float*>(&tmp2)[1]);
-
-	result[2].data = simd::load(
-			0.0f,
-			reinterpret_cast<float*>(&tmp0)[2],
-			reinterpret_cast<float*>(&tmp2)[2],
-			reinterpret_cast<float*>(&tmp1)[2]);
-
-	return result;
+	matrix<T, 4, 4> ret = identity<T, 4>();
+	ret[0].data = simd::assign(simd::get_element<T, 4, 0>(tmp0),
+			simd::get_element<T, 4, 0>(tmp1), simd::get_element<T, 4, 0>(tmp2), T(0));
+	ret[1].data = simd::assign(simd::get_element<T, 4, 1>(tmp2),
+			simd::get_element<T, 4, 1>(tmp0), simd::get_element<T, 4, 1>(tmp1), T(0));
+	ret[2].data = simd::assign(simd::get_element<T, 4, 2>(tmp1),
+			simd::get_element<T, 4, 2>(tmp2), simd::get_element<T, 4, 2>(tmp0), T(0));
+	return ret;
+}
+};
 }
 
 template <typename T>
-inline matrix<T, 4, 4> perspective(T fovy, T aspect, T znear, T zfar);
-template <typename T>
-inline matrix<T, 4, 4> look_at(const vector<T, 3>& eye, const vector<T, 3>& target, const normal<T, 3>& up);
-
-inline matrix<T, 4, 4> perspective(float fovy, float aspect, float znear, float zfar) {
-	const float halftan = std::tan(fovy / 2.f);
-
-	simd::vector<T, 4> vecs[4];
-	vecs[0] = simd::load(0.f, 0.f, 0.f, 1.f / aspect * halftan);
-	vecs[1] = simd::load(0.f, 0.f, 1.f / halftan, 0.f);
-	vecs[2] = simd::load(-1.f, -(zfar + znear) / (zfar - znear), 0.f, 0.f);
-	vecs[3] = simd::load(0.f, -2 * (zfar * znear) / (zfar - znear), 0.f, 0.f);
-	return mat4(vecs);
+inline matrix<T, 4, 4> rotation(const unit_quaternion<T>& rot) {
+	return detail::transform_impl<T>::rotation(rot);
 }
 
-inline mat4 look_at(const vec3& eye, const vec3& target, const vec3& up) {
-	const vec3 f = normalize(eye - target);
-	const vec3 s = normalize(cross(up, f));
-	const vec3 u = cross(f, s);
+template <typename T>
+inline matrix<T, 4, 4> perspective(T fovy, T aspect, T znear, T zfar) {
+	const T halftan = std::tan(fovy / T(2));
 
-	simd::vector<T, 4> vecs[4];
-	vecs[0] = simd::load(s.x, u.x, f.x, 0.f);
-	vecs[1] = simd::load(s.y, u.y, f.y, 0.f);
-	vecs[2] = simd::load(s.z, u.z, f.z, 0.f);
-	vecs[3] = simd::load(-dot(s, eye), -dot(u,eye), -dot(f, eye), 1.f);
-	return mat4(vecs);
+	matrix<T, 4, 4> ret;
+	ret[0] = vec4(T(1) / aspect * halftan, T(0), T(0), T(0));
+	ret[1] = vec4(T(0), T(1) / halftan, T(0), T(0));
+	ret[2] = vec4(T(0), T(0), -(zfar + znear) / (zfar - znear), T(0), T(-1));
+	ret[3] = vec4(T(0), T(0), - 2 * (zfar * znear) / (zfar - znear), T(0));
+	return ret;
+}
+
+template <typename T>
+inline matrix<T, 4, 4> look_at(const vector<T, 3>& eye, const vector<T, 3>& target, const normal<T, 3>& up) {
+	const auto z = normalize(eye - target);
+	const auto x = normalize(cross(up, z));
+	const auto y = cross(z, x);
+
+	matrix<T, 4, 4> ret;
+	ret[0] = vec4(x.x, y.x, z.x, T(0));
+	ret[1] = vec4(x.y, y.y, z.y, T(0));
+	ret[2] = vec4(x.z, y.z, z.z, T(0));
+	ret[3] = vec4(-dot(x, eye), -dot(y,eye), -dot(z, eye), T(1));
+	return ret;
 }
 }
