@@ -47,7 +47,7 @@ struct generic_vec : simd::vector_data<T, N>
 	value_type get() const { return simd::get_element<T, N, I>(this->data); }
 
 	template <std::size_t I>
-	void set(const value_type& val) { simd::set_element<T, N, I>(this->data, val); }
+	void set(const value_type& val) { this->data = simd::set_element<T, N, I>(this->data, val); }
 
 	T& operator[](std::size_t index) {
 		assert(index < N);
