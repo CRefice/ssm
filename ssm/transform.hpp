@@ -10,17 +10,14 @@ namespace ssm
 // Returns an N+1-dimensional vector, with its last component set to 1.
 template <typename T, std::size_t N>
 inline vector<T, N + 1> homogenize(const vector<T, N>& vec) {
-	vector<T, N + 1> ret;
-	detail::unroll<0, N>::assign(ret, vec);
-	ret.template set<N>(T(1));
-	return ret;
+	return detail::unroll<0, N>::homogenize_vec<vector<T, N+1>, vector<T, N>>(vec);
 }
 
 // Returns an N-dimensional identity matrix.
 template <typename T, std::size_t N>
 inline matrix<T, N, N> identity() {
 	matrix<T, N, N> ret;
-	detail::unroll<0, N>::diagonal_assign_val(ret, T(1));
+	detail::unroll<0, N>::identity_mat(ret);
 	return ret;
 }
 
@@ -36,7 +33,7 @@ inline matrix<T, N + 1, N + 1> translation(const vector<T, N>& pos) {
 template <typename T, std::size_t N>
 inline matrix<T, N, N> scaling(const vector<T, N>& s) {
 	matrix<T, N, N> ret;
-	detail::unroll<0, N>::diagonal_assign_vec(ret, s);
+	detail::unroll<0, N>::scaling_mat(ret, s);
 	return ret;
 }
 
