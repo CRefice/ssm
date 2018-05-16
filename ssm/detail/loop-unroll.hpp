@@ -26,26 +26,32 @@ struct unroll
 	// Generates the I'th vector of an identity matrix.
 	template <typename Vec, std::size_t I, typename... Args>
 	inline static Vec identity_vec(Args... args) {
-		return next::template identity_vec<Vec, I, Vec::value_type, Args...>
-			(args..., select<Start, I, Vec::value_type>(1, 0));
+		return next::template identity_vec<Vec, I, typename Vec::value_type, Args...>
+			(args..., select<Start, I, typename Vec::value_type>(1, 0));
 	}
 
 	// Generates the I'th vector of a scaling matrix.
 	template <typename Vec, std::size_t I, typename... Args>
 	inline static Vec scaling_vec(const Vec& vec, Args... args) {
-		return next::template scaling_vec<Vec, I, Vec::value_type, Args...>
-			(vec, args..., select<Start, I, Vec::value_type>(vec.template get<Start>(), 0));
+		return next::template scaling_vec<Vec, I, typename Vec::value_type, Args...>
+			(vec, args..., select<Start, I, typename Vec::value_type>(vec.template get<Start>(), 0));
 	}
 
 	template <typename H, typename NH, typename... Args>
 	inline static H homogenize_vec(const NH& vec, Args... args) {
-		return next::template homogenize_vec<H, NH, NH::value_type, Args...>
+		return next::template homogenize_vec<H, NH, typename NH::value_type, Args...>
+			(vec, args..., vec.template get<Start>());
+	}
+
+	template <typename H, typename NH, typename... Args>
+	inline static NH dehomogenize_vec(const H& vec, Args... args) {
+		return next::template dehomogenize_vec<H, NH, typename H::value_type, Args...>
 			(vec, args..., vec.template get<Start>());
 	}
 
 	template <typename Mat>
 	inline static void identity_mat(Mat& out_mat) {
-		out_mat[Start] = unroll<0, End>::template identity_vec<Mat::value_type, Start>();
+		out_mat[Start] = unroll<0, End>::template identity_vec<typename Mat::value_type, Start>();
 		next::identity_mat(out_mat);
 	}
 
@@ -77,6 +83,11 @@ struct unroll<End, End>
 	template <typename H, typename NH, typename... Args>
 	inline static H homogenize_vec(const NH& vec, Args... args) {
 		return H(args..., typename H::value_type(1));
+	}
+
+	template <typename H, typename NH, typename... Args>
+	inline static NH dehomogenize_vec(const H& vec, Args... args) {
+		return NH(args...);
 	}
 
 	template <typename Mat>

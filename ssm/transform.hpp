@@ -10,7 +10,13 @@ namespace ssm
 // Returns an N+1-dimensional vector, with its last component set to 1.
 template <typename T, std::size_t N>
 inline vector<T, N + 1> homogenize(const vector<T, N>& vec) {
-	return detail::unroll<0, N>::homogenize_vec<vector<T, N+1>, vector<T, N>>(vec);
+	return detail::unroll<0, N>::template homogenize_vec<vector<T, N+1>, vector<T, N>>(vec);
+}
+
+// Returns an N+1-dimensional vector, with its last component set to 1.
+template <typename T, std::size_t N>
+inline vector<T, N-1> dehomogenize(const vector<T, N>& vec) {
+	return detail::unroll<0, N-1>::template dehomogenize_vec<vector<T, N>, vector<T, N-1>>(vec);
 }
 
 // Returns an N-dimensional identity matrix.

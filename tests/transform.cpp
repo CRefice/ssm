@@ -16,6 +16,13 @@ TEST_CASE( "transformations", "[transform]" ) {
 		REQUIRE(vec == vec_2);
 	}
 
+	SECTION( "homogenous coordinates" ) {
+		ssm::vec3 vec(1.0f, 2.0f, 3.0f);
+		ssm::vec4 hvec = ssm::homogenize(vec);
+		REQUIRE(hvec == ssm::vec4(1.0f, 2.0f, 3.0f, 1.0f));
+		REQUIRE(ssm::dehomogenize(hvec) == vec);
+	}
+
 	SECTION( "scaling" ) {
 		ssm::vec4 scale(2.0f, 3.0f, 5.0f, 10.0f);
 		ssm::mat4 mat = ssm::scaling(scale);
