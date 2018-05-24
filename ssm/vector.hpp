@@ -6,7 +6,7 @@
 namespace ssm
 {
 template <typename T, std::size_t N>
-struct normal : generic_vec<T, N>
+struct unit_vector : generic_vec<T, N>
 {
 	using generic_vec<T, N>::generic_vec;
 };
@@ -15,7 +15,7 @@ template <typename T, std::size_t N>
 struct vector : generic_vec<T, N>
 {
 	vector<T, N>() = default;
-	vector<T, N>(const normal<T, N>& norm) : generic_vec<T, N>(norm.data) {}
+	vector<T, N>(const unit_vector<T, N>& norm) : generic_vec<T, N>(norm.data) {}
 	using generic_vec<T, N>::generic_vec;
 };
 
@@ -56,8 +56,8 @@ inline vector<T, N> cross(const A<T, N>& a, const B<T, N>& b) {
 }
 
 template <template <class, std::size_t> class Vec, typename T, std::size_t N>
-inline normal<T, N> normalize(const Vec<T, N>& vec) {
-	normal<T, N> norm(vec.data);
+inline unit_vector<T, N> normalize(const Vec<T, N>& vec) {
+	unit_vector<T, N> norm(vec.data);
 	detail::vec_impl<T, N>::normalize(norm);
 	return norm;
 }
@@ -187,13 +187,13 @@ using dvec2 = vector<double, 2>;
 using dvec3 = vector<double, 3>;
 using dvec4 = vector<double, 4>;
 
-using inorm2 = normal<std::size_t, 2>;
-using inorm3 = normal<std::size_t, 3>;
-using inorm4 = normal<std::size_t, 4>;
-using norm2 = normal<float, 2>;
-using norm3 = normal<float, 3>;
-using norm4 = normal<float, 4>;
-using dnorm2 = normal<double, 2>;
-using dnorm3 = normal<double, 3>;
-using dnorm4 = normal<double, 4>;
+using inorm2 = unit_vector<std::size_t, 2>;
+using inorm3 = unit_vector<std::size_t, 3>;
+using inorm4 = unit_vector<std::size_t, 4>;
+using norm2 = unit_vector<float, 2>;
+using norm3 = unit_vector<float, 3>;
+using norm4 = unit_vector<float, 4>;
+using dnorm2 = unit_vector<double, 2>;
+using dnorm3 = unit_vector<double, 3>;
+using dnorm4 = unit_vector<double, 4>;
 }

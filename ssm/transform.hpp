@@ -122,7 +122,7 @@ inline matrix<T, 4, 4> perspective(T fovy, T aspect, T znear, T zfar) {
 }
 
 template <typename T>
-inline matrix<T, 4, 4> look_at(const vector<T, 3>& eye, const vector<T, 3>& target, const normal<T, 3>& up) {
+inline matrix<T, 4, 4> look_at(const vector<T, 3>& eye, const vector<T, 3>& target, const unit_vector<T, 3>& up) {
 	const auto z = normalize(eye - target);
 	const auto x = normalize(cross(up, z));
 	const auto y = cross(z, x);
