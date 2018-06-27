@@ -1,6 +1,8 @@
 // The following are types and functions for achieving "compile-time loops",
 // using simple SFINAE template metaprogramming.
 
+#include <cstdint>
+
 namespace ssm
 {
 namespace detail
