@@ -4,7 +4,7 @@ namespace ssm
 namespace simd
 {
 template<>
-struct is_simd<float, 4> { static const bool value = true; };
+struct is_simd<float, 4> { static constexpr bool value = true; };
 
 typedef __m128 f128;
 
@@ -13,7 +13,7 @@ namespace detail
 template <size_t N>
 struct access_impl<float, 4, N>
 {
-	static f128 set(f128 vec, float val) {
+	static inline f128 set(f128 vec, float val) {
 #if SSM_ARCH & SSM_ARCH_SSE4_BIT
 		return _mm_insert_ps(vec, _mm_set_ss(val), N * 0x10);
 #else
@@ -27,7 +27,7 @@ struct access_impl<float, 4, N>
 #endif
 	}
 
-	static float get(f128 vec) {
+	static inline float get(f128 vec) {
 		const f128 shuf = _mm_shuffle_ps(vec, vec, _MM_SHUFFLE(N, N, N, N));
 		return _mm_cvtss_f32(shuf);
 	}
@@ -36,12 +36,12 @@ struct access_impl<float, 4, N>
 template <>
 struct access_impl<float, 4, 0>
 {
-	static f128 set(f128 vec, float val) {
+	static inline f128 set(f128 vec, float val) {
 		const f128 single = _mm_set_ss(val);
 		return _mm_move_ss(vec, single);
 	}
 
-	static float get(f128 vec) {
+	static inline float get(f128 vec) {
 		return _mm_cvtss_f32(vec);
 	}
 };
