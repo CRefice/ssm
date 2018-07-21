@@ -133,6 +133,16 @@ inline matrix<T, M, N> operator/(matrix<T, M, N> mat, T val) {
 	return mat /= val;
 }
 
+template <typename T, std::size_t M, std::size_t N>
+inline T* data_ptr(matrix<T, M, N>& mat) {
+	return data_ptr(mat[0]);
+}
+
+template <typename T, std::size_t M, std::size_t N>
+inline const T* data_ptr(const matrix<T, M, N>& mat) {
+	return data_ptr(mat[0]);
+}
+
 //----------------------------------------------
 // Utility typedefs
 //----------------------------------------------
