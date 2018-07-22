@@ -18,7 +18,7 @@ template <typename T, std::size_t N, typename = void>
 struct vec_impl
 {
 	static inline T dot(const generic_vec<T, N>& a, const generic_vec<T, N>& b) {
-		T ret = T(0);
+		T ret = 0;
 		for (std::size_t i = 0; i < N; ++i)
 			ret += a.data[i] * b.data[i];
 		return ret;

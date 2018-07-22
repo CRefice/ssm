@@ -93,7 +93,7 @@ static inline matrix<T, 4, 4> rotation(const unit_quaternion<T>& rot) {
 	const simd::vector<T, 4> yzxw2 = simd::shuffle<1, 2, 0, 3>(xyzw2);
 
 	simd::vector<T, 4> wide1;
-	simd::fill(wide1, T(1));
+	simd::fill(wide1, 1);
 
 	simd::vector<T, 4> tmp0 = simd::sub(wide1, simd::mul(yzxw2, yzxw));
 	tmp0 = simd::sub(tmp0, simd::mul(zxyw2, zxyw));
@@ -106,11 +106,11 @@ static inline matrix<T, 4, 4> rotation(const unit_quaternion<T>& rot) {
 
 	matrix<T, 4, 4> ret = identity<T, 4>();
 	ret[0].data = simd::assign(simd::get_element<T, 4, 0>(tmp0),
-			simd::get_element<T, 4, 0>(tmp1), simd::get_element<T, 4, 0>(tmp2), T(0));
+			simd::get_element<T, 4, 0>(tmp1), simd::get_element<T, 4, 0>(tmp2), 0);
 	ret[1].data = simd::assign(simd::get_element<T, 4, 1>(tmp2),
-			simd::get_element<T, 4, 1>(tmp0), simd::get_element<T, 4, 1>(tmp1), T(0));
+			simd::get_element<T, 4, 1>(tmp0), simd::get_element<T, 4, 1>(tmp1), 0);
 	ret[2].data = simd::assign(simd::get_element<T, 4, 2>(tmp1),
-			simd::get_element<T, 4, 2>(tmp2), simd::get_element<T, 4, 2>(tmp0), T(0));
+			simd::get_element<T, 4, 2>(tmp2), simd::get_element<T, 4, 2>(tmp0), 0);
 	return ret;
 }
 };
@@ -123,13 +123,13 @@ inline matrix<T, 4, 4> rotation(const unit_quaternion<T>& rot) {
 
 template <typename T>
 inline matrix<T, 4, 4> perspective(T fovy, T aspect, T znear, T zfar) {
-	const T halftan = std::tan(fovy / T(2));
+	const T halftan = std::tan(fovy / 2);
 
 	matrix<T, 4, 4> ret;
-	ret[0] = vec4(T(1) / aspect * halftan, T(0), T(0), T(0));
-	ret[1] = vec4(T(0), T(1) / halftan, T(0), T(0));
-	ret[2] = vec4(T(0), T(0), -(zfar + znear) / (zfar - znear), T(0), T(-1));
-	ret[3] = vec4(T(0), T(0), - 2 * (zfar * znear) / (zfar - znear), T(0));
+	ret[0] = vec4(1 / aspect * halftan, 0, 0, 0);
+	ret[1] = vec4(0, 1 / halftan, 0, 0);
+	ret[2] = vec4(0, 0, -(zfar + znear) / (zfar - znear), 0, T(-1));
+	ret[3] = vec4(0, 0, - 2 * (zfar * znear) / (zfar - znear), 0);
 	return ret;
 }
 
@@ -139,10 +139,10 @@ inline matrix<T, 4, 4> ortho(T left, T right, T top, T bottom, T near, T far) {
 	const auto height = top - bottom;
 	const auto depth = far - near;
 	matrix<T, 4, 4> ret;
-	ret[0] = vec4(2 / width, T(0), T(0), -(right + left) / width);
-	ret[1] = vec4(T(0), 2 / height, T(0), -(top + bottom) / height);
-	ret[2] = vec4(T(0), T(0), -2 / depth,  -(far + near) / depth);
-	ret[3] = vec4(T(0), T(0), T(0), T(1));
+	ret[0] = vec4(2 / width, 0, 0, -(right + left) / width);
+	ret[1] = vec4(0, 2 / height, 0, -(top + bottom) / height);
+	ret[2] = vec4(0, 0, -2 / depth,  -(far + near) / depth);
+	ret[3] = vec4(0, 0, 0, 1);
 	return ret;
 }
 
@@ -150,10 +150,10 @@ template <typename T>
 inline matrix<T, 4, 4> ortho(T width, T height, T near, T far) {
 	const auto depth = far - near;
 	matrix<T, 4, 4> ret;
-	ret[0] = vec4(2 / width, T(0), T(0), T(0));
-	ret[1] = vec4(T(0), 2 / height, T(0), T(0));
-	ret[2] = vec4(T(0), T(0), -2 / depth,  -(far + near) / depth);
-	ret[3] = vec4(T(0), T(0), T(0), T(1));
+	ret[0] = vec4(2 / width, 0, 0, 0);
+	ret[1] = vec4(0, 2 / height, 0, 0);
+	ret[2] = vec4(0, 0, -2 / depth,  -(far + near) / depth);
+	ret[3] = vec4(0, 0, 0, 1);
 	return ret;
 }
 
@@ -164,10 +164,10 @@ inline matrix<T, 4, 4> look_at(const vector<T, 3>& eye, const vector<T, 3>& targ
 	const auto y = cross(z, x);
 
 	matrix<T, 4, 4> ret;
-	ret[0] = vec4(x.x, y.x, z.x, T(0));
-	ret[1] = vec4(x.y, y.y, z.y, T(0));
-	ret[2] = vec4(x.z, y.z, z.z, T(0));
-	ret[3] = vec4(-dot(x, eye), -dot(y, eye), -dot(z, eye), T(1));
+	ret[0] = vec4(x.x, y.x, z.x, 0);
+	ret[1] = vec4(x.y, y.y, z.y, 0);
+	ret[2] = vec4(x.z, y.z, z.z, 0);
+	ret[3] = vec4(-dot(x, eye), -dot(y, eye), -dot(z, eye), 1);
 	return ret;
 }
 }
