@@ -10,8 +10,8 @@ string(
 add_compile_options("${opts}")
 add_compile_options("-march=native")
 
-add_library(Catch INTERFACE)
-target_include_directories(Catch INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+add_library(Catch catch.cpp)
+target_include_directories(Catch PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 link_libraries(ssm)
 link_libraries(Catch)
