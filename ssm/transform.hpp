@@ -27,6 +27,7 @@ inline matrix<T, N, N> identity() {
 	return ret;
 }
 
+// Generate a new matrix from a translation vector.
 // Note that translation requires a homogenous matrix to be represented as one,
 // hence the N+1-sized matrix.
 template <typename T, std::size_t N>
@@ -35,12 +36,23 @@ inline matrix<T, N + 1, N + 1> translation(const vector<T, N>& pos) {
 	ret[N] = homogenize(pos);
 	return ret;
 }
+// In-place translate a matrix.
+template <typename T, std::size_t N>
+inline void translate(matrix<T, N+1, N+1>& mat, const vector<T, N>& pos) {
+	mat[N] += detail::unroll<0, N>::template extend_vec<vector<T, N+1>, vector<T, N>>(pos);
+}
 
+// Generate a new matrix from a scaling vector.
 template <typename T, std::size_t N>
 inline matrix<T, N, N> scaling(const vector<T, N>& s) {
 	matrix<T, N, N> ret;
 	detail::unroll<0, N>::scaling_mat(ret, s);
 	return ret;
+}
+// In-place scale a matrix.
+template <typename T, std::size_t N>
+inline void scale(matrix<T, N, N>& mat, const vector<T, N>& s) {
+	detail::unroll<0, N>::scale_inplace_mat(mat, s);
 }
 
 namespace detail
@@ -122,6 +134,30 @@ inline matrix<T, 4, 4> perspective(T fovy, T aspect, T znear, T zfar) {
 }
 
 template <typename T>
+inline matrix<T, 4, 4> ortho(T left, T right, T top, T bottom, T near, T far) {
+	const auto width = right - left;
+	const auto height = top - bottom;
+	const auto depth = far - near;
+	matrix<T, 4, 4> ret;
+	ret[0] = vec4(2 / width, T(0), T(0), -(right + left) / width);
+	ret[1] = vec4(T(0), 2 / height, T(0), -(top + bottom) / height);
+	ret[2] = vec4(T(0), T(0), -2 / depth,  -(far + near) / depth);
+	ret[3] = vec4(T(0), T(0), T(0), T(1));
+	return ret;
+}
+
+template <typename T>
+inline matrix<T, 4, 4> ortho(T width, T height, T near, T far) {
+	const auto depth = far - near;
+	matrix<T, 4, 4> ret;
+	ret[0] = vec4(2 / width, T(0), T(0), T(0));
+	ret[1] = vec4(T(0), 2 / height, T(0), T(0));
+	ret[2] = vec4(T(0), T(0), -2 / depth,  -(far + near) / depth);
+	ret[3] = vec4(T(0), T(0), T(0), T(1));
+	return ret;
+}
+
+template <typename T>
 inline matrix<T, 4, 4> look_at(const vector<T, 3>& eye, const vector<T, 3>& target, const unit_vector<T, 3>& up) {
 	const auto z = normalize(eye - target);
 	const auto x = normalize(cross(up, z));
@@ -131,7 +167,7 @@ inline matrix<T, 4, 4> look_at(const vector<T, 3>& eye, const vector<T, 3>& targ
 	ret[0] = vec4(x.x, y.x, z.x, T(0));
 	ret[1] = vec4(x.y, y.y, z.y, T(0));
 	ret[2] = vec4(x.z, y.z, z.z, T(0));
-	ret[3] = vec4(-dot(x, eye), -dot(y,eye), -dot(z, eye), T(1));
+	ret[3] = vec4(-dot(x, eye), -dot(y, eye), -dot(z, eye), T(1));
 	return ret;
 }
 }

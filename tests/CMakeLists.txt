@@ -8,6 +8,7 @@ string(
     ">"
 )
 add_compile_options("${opts}")
+add_compile_options("-march=native")
 
 add_library(Catch INTERFACE)
 target_include_directories(Catch INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})

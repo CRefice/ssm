@@ -38,6 +38,12 @@ struct unroll
 		return next::template scaling_vec<Vec, I, typename Vec::value_type, Args...>
 			(vec, args..., select<Start, I, typename Vec::value_type>(vec.template get<Start>(), 0));
 	}
+	// Generates a vector that scales a matrix by vec.
+	template <typename Vec, std::size_t I, typename... Args>
+	inline static Vec scaling_inplace_vec(const Vec& vec, Args... args) {
+		return next::template scaling_vec<Vec, I, typename Vec::value_type, Args...>
+			(vec, args..., select<Start, I, typename Vec::value_type>(vec.template get<Start>(), 1));
+	}
 
 	template <typename H, typename NH, typename... Args>
 	inline static H homogenize_vec(const NH& vec, Args... args) {
@@ -51,6 +57,12 @@ struct unroll
 			(vec, args..., vec.template get<Start>());
 	}
 
+	template <typename H, typename NH, typename... Args>
+	inline static H extend_vec(const NH& vec, Args... args) {
+		return next::template extend_vec<H, NH, typename NH::value_type, Args...>
+			(vec, args..., vec.template get<Start>());
+	}
+
 	template <typename Mat>
 	inline static void identity_mat(Mat& out_mat) {
 		out_mat[Start] = unroll<0, End>::template identity_vec<typename Mat::value_type, Start>();
@@ -61,6 +73,11 @@ struct unroll
 	inline static void scaling_mat(Mat& out_mat, const Vec& vec) {
 		out_mat[Start] = unroll<0, End>::template scaling_vec<Vec, Start>(vec);
 		next::scaling_mat(out_mat, vec);
+	}
+	template <typename Mat, typename Vec>
+	inline static void scale_inplace_mat(Mat& mat, const Vec& vec) {
+		mat[Start] *= unroll<0, End>::template scaling_inplace_vec<Vec, Start>(vec);
+		next::scale_inplace_mat(mat, vec);
 	}
 };
 
@@ -81,10 +98,20 @@ struct unroll<End, End>
 	inline static Vec scaling_vec(const Vec& vec, Args... args) {
 		return Vec(args...);
 	}
+	// Generates the I'th vector of a scaling matrix.
+	template <typename Vec, std::size_t I, typename... Args>
+	inline static Vec scaling_inplace_vec(const Vec& vec, Args... args) {
+		return Vec(args...);
+	}
 
 	template <typename H, typename NH, typename... Args>
 	inline static H homogenize_vec(const NH& vec, Args... args) {
-		return H(args..., typename H::value_type(1));
+		return H(args..., 1);
+	}
+
+	template <typename H, typename NH, typename... Args>
+	inline static H extend_vec(const NH& vec, Args... args) {
+		return H(args..., 0);
 	}
 
 	template <typename H, typename NH, typename... Args>
@@ -97,6 +124,9 @@ struct unroll<End, End>
 
 	template <typename Mat, typename Vec>
 	inline static void scaling_mat(Mat& out_mat, const Vec& vec) {}
+
+	template <typename Mat, typename Vec>
+	inline static void scale_inplace_mat(Mat& out_mat, const Vec& vec) {}
 
 };
 }

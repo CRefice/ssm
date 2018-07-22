@@ -26,8 +26,11 @@ TEST_CASE( "transformations", "[transform]" ) {
 	SECTION( "scaling" ) {
 		ssm::vec4 scale(2.0f, 3.0f, 5.0f, 10.0f);
 		ssm::mat4 mat = ssm::scaling(scale);
-		ssm::vec4 vec(1.0f, 2.0f, 3.0f, 4.0f);
+		ssm::mat4 inplace = ssm::identity<float, 4>();
+		ssm::scale(inplace, scale);
+		REQUIRE (inplace == mat);
 
+		ssm::vec4 vec(1.0f, 2.0f, 3.0f, 4.0f);
 		ssm::vec4 vec_2 = mat * vec;
 		REQUIRE(epsilon_compare(vec_2.x, 2.0f, 1e-6f));
 		REQUIRE(epsilon_compare(vec_2.y, 6.0f, 1e-6f));
@@ -38,8 +41,11 @@ TEST_CASE( "transformations", "[transform]" ) {
 	SECTION( "translation" ) {
 		ssm::vec3 pos(3.0f, 4.0f, 5.0f);
 		ssm::mat4 mat = ssm::translation(pos);
-		ssm::vec4 vec(1.0f, 2.0f, 3.0f, 1.0f);
+		ssm::mat4 inplace = ssm::identity<float, 4>();
+		ssm::translate(inplace, pos);
+		REQUIRE (inplace == mat);
 
+		ssm::vec4 vec(1.0f, 2.0f, 3.0f, 1.0f);
 		ssm::vec4 vec_2 = mat * vec;
 		REQUIRE(epsilon_compare(vec_2.x, 4.0f, 1e-6f));
 		REQUIRE(epsilon_compare(vec_2.y, 6.0f, 1e-6f));
