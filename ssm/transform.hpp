@@ -139,10 +139,10 @@ inline matrix<T, 4, 4> ortho(T left, T right, T top, T bottom, T near, T far) {
 	const auto height = top - bottom;
 	const auto depth = far - near;
 	matrix<T, 4, 4> ret;
-	ret[0] = vec4(2 / width, 0, 0, -(right + left) / width);
-	ret[1] = vec4(0, 2 / height, 0, -(top + bottom) / height);
-	ret[2] = vec4(0, 0, -2 / depth,  -(far + near) / depth);
-	ret[3] = vec4(0, 0, 0, 1);
+	ret[0] = vec4(2 / width, 0, 0, 0);
+	ret[1] = vec4(0, 2 / height, 0, 0);
+	ret[2] = vec4(0, 0, -2 / depth,  0);
+	ret[3] = vec4(-(right + left) / width, -(top + bottom) / height, -(far + near) / depth, 1);
 	return ret;
 }
 
@@ -152,8 +152,8 @@ inline matrix<T, 4, 4> ortho(T width, T height, T near, T far) {
 	matrix<T, 4, 4> ret;
 	ret[0] = vec4(2 / width, 0, 0, 0);
 	ret[1] = vec4(0, 2 / height, 0, 0);
-	ret[2] = vec4(0, 0, -2 / depth,  -(far + near) / depth);
-	ret[3] = vec4(0, 0, 0, 1);
+	ret[2] = vec4(0, 0, -2 / depth, 0);
+	ret[3] = vec4(0, 0, -(far + near) / depth, 1);
 	return ret;
 }
 
