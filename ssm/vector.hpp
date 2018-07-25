@@ -177,23 +177,29 @@ inline bool operator!=(const A<T, N>& a, const B<T, N>& b) {
 //----------------------------------------------
 // Utility typedefs
 //----------------------------------------------
-using ivec2 = vector<std::size_t, 2>;
-using ivec3 = vector<std::size_t, 3>;
-using ivec4 = vector<std::size_t, 4>;
 using vec2 = vector<float, 2>;
 using vec3 = vector<float, 3>;
 using vec4 = vector<float, 4>;
 using dvec2 = vector<double, 2>;
 using dvec3 = vector<double, 3>;
 using dvec4 = vector<double, 4>;
+using ivec2 = vector<int, 2>;
+using ivec3 = vector<int, 3>;
+using ivec4 = vector<int, 4>;
+using uvec2 = vector<unsigned, 2>;
+using uvec3 = vector<unsigned, 3>;
+using uvec4 = vector<unsigned, 4>;
 
-using inorm2 = unit_vector<std::size_t, 2>;
-using inorm3 = unit_vector<std::size_t, 3>;
-using inorm4 = unit_vector<std::size_t, 4>;
 using norm2 = unit_vector<float, 2>;
 using norm3 = unit_vector<float, 3>;
 using norm4 = unit_vector<float, 4>;
 using dnorm2 = unit_vector<double, 2>;
 using dnorm3 = unit_vector<double, 3>;
 using dnorm4 = unit_vector<double, 4>;
+using inorm2 = unit_vector<int, 2>;
+using inorm3 = unit_vector<int, 3>;
+using inorm4 = unit_vector<int, 4>;
+using unorm2 = unit_vector<unsigned, 2>;
+using unorm3 = unit_vector<unsigned, 3>;
+using unorm4 = unit_vector<unsigned, 4>;
 }

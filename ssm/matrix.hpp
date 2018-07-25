@@ -146,13 +146,16 @@ inline const T* data_ptr(const matrix<T, M, N>& mat) {
 //----------------------------------------------
 // Utility typedefs
 //----------------------------------------------
-using imat2 = matrix<int, 2, 2>;
-using imat3 = matrix<int, 3, 3>;
-using imat4 = matrix<int, 4, 4>;
 using mat2 = matrix<float, 2, 2>;
 using mat3 = matrix<float, 3, 3>;
 using mat4 = matrix<float, 4, 4>;
 using dmat2 = matrix<double, 2, 2>;
 using dmat3 = matrix<double, 3, 3>;
 using dmat4 = matrix<double, 4, 4>;
+using imat2 = matrix<int, 2, 2>;
+using imat3 = matrix<int, 3, 3>;
+using imat4 = matrix<int, 4, 4>;
+using umat2 = matrix<unsigned, 2, 2>;
+using umat3 = matrix<unsigned, 3, 3>;
+using umat4 = matrix<unsigned, 4, 4>;
 }
