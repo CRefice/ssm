@@ -111,7 +111,7 @@ template <typename T, std::size_t M, std::size_t N, std::size_t P>
 inline matrix<T, M, P> operator*(const matrix<T, M, N>& a, const matrix<T, N, P> b) {
 	matrix<T, M, P> ret;
 	for (std::size_t i = 0; i < M; ++i)
-		ret[i] = a[i] * b;
+		ret[i] = b[i] * a;
 	return ret;
 }
 

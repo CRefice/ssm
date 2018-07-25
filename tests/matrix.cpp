@@ -112,10 +112,10 @@ TEST_CASE("operations", "[matrix]") {
 		REQUIRE(mat_3 == mat_2 * mat);
 
 		ssm::mat4 result;
-		result[0] = { 20.0f, 20.0f, 20.0f, 20.0f };
-		result[1] = { 52.0f, 52.0f, 52.0f, 52.0f };
-		result[2] = { 84.0f, 84.0f, 84.0f, 84.0f };
-		result[3] = { 116.0f, 116.0f, 116.0f, 116.0f };
+		result[0] = { 56.0f, 64.0f, 72.0f, 80.0f };
+		result[1] = { 56.0f, 64.0f, 72.0f, 80.0f };
+		result[2] = { 56.0f, 64.0f, 72.0f, 80.0f };
+		result[3] = { 56.0f, 64.0f, 72.0f, 80.0f };
 
 		REQUIRE(epsilon_compare(mat_3, result, 1e-6f));
 	}
