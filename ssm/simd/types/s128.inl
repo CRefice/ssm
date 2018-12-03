@@ -8,12 +8,6 @@ struct is_simd<int, 4> { static constexpr bool value = true; };
 
 typedef __m128i s128;
 
-template <>
-struct make_vector<int, 4>
-{
-	using type = s128;
-};
-
 namespace detail
 {
 template <size_t N>
@@ -24,7 +18,7 @@ struct access_impl<int, 4, N>
 		return _mm_insert_epi32(vec, val, N);
 #else
 		const s128 ins0 = _mm_insert_epi16(vec, val, N / 2);
-		return _mm_insert_epi16(vec, val >> 16, N / 2 + 1);
+		return _mm_insert_epi16(ins0, val >> 16, N / 2 + 1);
 #endif
 	}
 
@@ -43,12 +37,19 @@ struct access_impl<int, 4, 0>
 {
 	static inline s128 set(s128 vec, int val) {
 		const s128 ins0 = _mm_insert_epi16(vec, val, 0);
-		return _mm_insert_epi16(vec, val >> 16, 1);
+		return _mm_insert_epi16(ins0, val >> 16, 1);
 	}
 
 	static inline int get(s128 vec) {
 		return _mm_cvtsi128_si32(vec);
 	}
+};
+}
+
+template <>
+struct make_vector<int, 4>
+{
+	using type = s128;
 };
 
 inline void assign(s128& vec, int a, int b, int c, int d) {
@@ -138,8 +139,8 @@ inline s128 equals(s128 a, s128 b) {
 inline s128 dot(s128 a, s128 b) {
 #if SSM_ARCH & SSM_ARCH_SSSE3_BIT
 	const s128 mul1 = mul(a, b);
-	const s128 hadd = _mm_hadd_epi32(mul1, mul1)
-	return _mm_hadd_epi32(hadd, hadd)
+	const s128 hadd = _mm_hadd_epi32(mul1, mul1);
+	return _mm_hadd_epi32(hadd, hadd);
 #else
 	const s128 mul0 = mul(a, b);
 	const s128 swp0 = shuffle<2, 3, 0, 1>(mul0);
@@ -147,7 +148,6 @@ inline s128 dot(s128 a, s128 b) {
 	const s128 swp1 = shuffle<3, 2, 1, 0>(add0);
 	return add(add0, swp1);
 #endif
-}
 }
 }
 }

@@ -67,6 +67,17 @@ inline d128 div(d128 a, d128 b) {
 	return _mm_div_pd(a, b);
 }
 
+template <bool X, bool Y>
+inline d128 negate(d128 vec) {
+	const d128 sign = _mm_set_pd(X ? 0. : -0., Y ? 0. : -0.);
+	return _mm_xor_pd(vec, sign);
+}
+
+inline d128 negate(d128 vec) {
+	const d128 sign = _mm_set1_pd(-0.f);
+	return _mm_xor_pd(vec, sign);
+}
+
 template <size_t N>
 inline d128 shuffle(d128 a) {
 	static_assert(N < 2, "Shuffle index out of range");

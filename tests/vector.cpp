@@ -46,14 +46,30 @@ TEST_CASE( "constructors", "[vector]" ) {
 
 TEST_CASE("member getters-setters", "[vector]") {
 	ssm::vec4 vec(1.0f, 2.0f, 3.0f, 4.0f);
-	vec.x = 11.0f;
-	REQUIRE(vec.x == 11.0f);
-	vec.y = 12.0f;
-	REQUIRE(vec.y == 12.0f);
-	vec.z = 13.0f;
-	REQUIRE(vec.z == 13.0f);
-	vec.w = 14.0f;
-	REQUIRE(vec.w == 14.0f);
+	REQUIRE(vec.x == 1.0f);
+	REQUIRE(vec.y == 2.0f);
+	REQUIRE(vec.z == 3.0f);
+	REQUIRE(vec.w == 4.0f);
+	vec.x = vec.y;
+	REQUIRE(vec.x == 2.0f);
+	REQUIRE(vec.y == 2.0f);
+	vec.z = vec.w;
+	REQUIRE(vec.z == 4.0f);
+	REQUIRE(vec.w == 4.0f);
+	vec.x = 5.0f;
+	vec.y = 6.0f;
+	vec.z = 7.0f;
+	vec.w = 8.0f;
+	REQUIRE(vec.x == 5.0f);
+	REQUIRE(vec.y == 6.0f);
+	REQUIRE(vec.z == 7.0f);
+	REQUIRE(vec.w == 8.0f);
+	ssm::vec4 vec_2(1.0f, 2.0f, 3.0f, 4.0f);
+	vec.x = (float)vec_2.x;
+	REQUIRE(vec.x == 1.0f);
+	REQUIRE(vec.y == 6.0f);
+	REQUIRE(vec.z == 7.0f);
+	REQUIRE(vec.w == 8.0f);
 }
 
 TEST_CASE( "operations", "[vector]" ) {
