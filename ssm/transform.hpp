@@ -7,13 +7,19 @@
 
 namespace ssm
 {
-// Returns an N+1-dimensional vector, with its last component set to 1.
-template <typename T, std::size_t N>
-inline vector<T, N + 1> homogenize(const vector<T, N>& vec) {
-	return detail::unroll<0, N>::template homogenize_vec<vector<T, N+1>, vector<T, N>>(vec);
+template <typename T, std::size_t N, typename... Args>
+inline vector<T, N + sizeof...(Args)> extend(const vector<T, N>& vec, Args... args) {
+	return detail::unroll<0, N>::template extend_vec<vector<T, N + sizeof...(Args)>, vector<T, N>>
+		(vec, args...);
 }
 
 // Returns an N+1-dimensional vector, with its last component set to 1.
+template <typename T, std::size_t N>
+inline vector<T, N + 1> homogenize(const vector<T, N>& vec) {
+	return extend(vec, T(1));
+}
+
+// Returns an N-1-dimensional vector, with its last component removed.
 template <typename T, std::size_t N>
 inline vector<T, N-1> dehomogenize(const vector<T, N>& vec) {
 	return detail::unroll<0, N-1>::template dehomogenize_vec<vector<T, N>, vector<T, N-1>>(vec);
@@ -36,10 +42,11 @@ inline matrix<T, N + 1, N + 1> translation(const vector<T, N>& pos) {
 	ret[N] = homogenize(pos);
 	return ret;
 }
+
 // In-place translate a matrix.
 template <typename T, std::size_t N>
 inline void translate(matrix<T, N+1, N+1>& mat, const vector<T, N>& pos) {
-	mat[N] += detail::unroll<0, N>::template extend_vec<vector<T, N+1>, vector<T, N>>(pos);
+	mat[N] += extend(pos, T(0));
 }
 
 // Generate a new matrix from a scaling vector.

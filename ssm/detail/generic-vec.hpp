@@ -22,6 +22,8 @@ template <typename T, std::size_t N>
 struct generic_vec : simd::vector_data<T, N>
 {
 	using value_type = T;
+	static constexpr std::size_t size = N;
+
 	// Initialize all elements to zero.
 	generic_vec() = default;
 

@@ -1,3 +1,5 @@
+#pragma once
+
 // The following are types and functions for achieving "compile-time loops",
 // using simple SFINAE template metaprogramming.
 
@@ -46,12 +48,6 @@ struct unroll
 	}
 
 	template <typename H, typename NH, typename... Args>
-	inline static H homogenize_vec(const NH& vec, Args... args) {
-		return next::template homogenize_vec<H, NH, typename NH::value_type, Args...>
-			(vec, args..., vec.template get<Start>());
-	}
-
-	template <typename H, typename NH, typename... Args>
 	inline static NH dehomogenize_vec(const H& vec, Args... args) {
 		return next::template dehomogenize_vec<H, NH, typename H::value_type, Args...>
 			(vec, args..., vec.template get<Start>());
@@ -60,7 +56,7 @@ struct unroll
 	template <typename H, typename NH, typename... Args>
 	inline static H extend_vec(const NH& vec, Args... args) {
 		return next::template extend_vec<H, NH, typename NH::value_type, Args...>
-			(vec, args..., vec.template get<Start>());
+			(vec, vec.template get<NH::size - Start - 1>(), args...);
 	}
 
 	template <typename Mat>
@@ -105,13 +101,8 @@ struct unroll<End, End>
 	}
 
 	template <typename H, typename NH, typename... Args>
-	inline static H homogenize_vec(const NH& vec, Args... args) {
-		return H(args..., 1);
-	}
-
-	template <typename H, typename NH, typename... Args>
 	inline static H extend_vec(const NH& vec, Args... args) {
-		return H(args..., 0);
+		return H(args...);
 	}
 
 	template <typename H, typename NH, typename... Args>
