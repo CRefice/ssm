@@ -96,8 +96,22 @@ inline bool equals(d128 a, d128 b) {
 	return _mm_movemask_pd(cmp0) == 0x3;
 }
 
-inline d128 sqrt(d128 a) {
-	return _mm_sqrt_pd(a);
+inline d128 rsqrt(d128 a) {
+	const d128 sqrt = _mm_sqrt_pd(a);
+	return _mm_div_pd(_mm_set1_pd(1.0f), sqrt);
+}
+
+inline d128 dot(d128 a, d128 b) {
+#if SSM_ARCH & SSM_ARCH_SSE4_2_BIT
+	return _mm_dp_pd(a, b, 0xFF);
+#elif SSM_ARCH & SSM_ARCH_SSE3_BIT
+	const d128 mul1 = mul(a, b);
+	return _mm_hadd_pd(mul1, mul1)
+#else
+	const d128 mul0 = mul(a, b);
+	const d128 swp0 = shuffle<1, 0>(mul0);
+	return add(mul0, swp0);
+#endif
 }
 }
 }

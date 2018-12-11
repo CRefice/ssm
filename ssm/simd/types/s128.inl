@@ -81,7 +81,7 @@ inline s128 mul(s128 a, s128 b) {
 inline s128 div(s128 a, s128 b) {
 	// Convert to float, divide, convert back
 	const __m128 div = _mm_div_ps(_mm_cvtepi32_ps(a), _mm_cvtepi32_ps(b));
-	return _mm_cvtps_epi32(div);
+	return _mm_cvttps_epi32(div);
 }
 
 // Helpers for creating compile-time vectors
@@ -132,8 +132,9 @@ inline s128 shuffle(s128 a) {
 	return _mm_shuffle_epi32(a, (W << 6) | (Z << 4) | (Y << 2) | X);
 }
 
-inline s128 equals(s128 a, s128 b) {
-	return _mm_cmpeq_epi32(a, b);
+inline bool equals(s128 a, s128 b) {
+	const s128 cmp0 = _mm_cmpeq_epi32(a, b);
+	return _mm_movemask_epi8(cmp0) == 0xffff;
 }
 
 inline s128 dot(s128 a, s128 b) {

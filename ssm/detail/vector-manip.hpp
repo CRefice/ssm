@@ -25,7 +25,7 @@ struct vec_impl
 	}
 
 	static inline void normalize(generic_vec<T, N>& vec) {
-		T length = vec_impl<T, N>::dot(vec, vec);
+		T length = std::sqrt(vec_impl<T, N>::dot(vec, vec));
 		for (std::size_t i = 0; i < N; ++i)
 			vec.data[i] /= length;
 	}
@@ -79,7 +79,7 @@ struct vec_impl
 	}
 
 	static inline bool equals(const generic_vec<T, N>& a, const generic_vec<T, N>& b) {
-		for (std::size_t i = 0; i < 3; ++i) {
+		for (std::size_t i = 0; i < N; ++i) {
 			if (a.data[i] != b.data[i])
 				return false;
 		}
