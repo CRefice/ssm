@@ -8,6 +8,7 @@ bool epsilon_compare(float a, float b, float epsilon) {
 
 TEST_CASE( "operations", "[quaternion]" ) {
 	ssm::quat q;
+	ssm::dquat dq;
 
 	SECTION( "equality comparisons" ) {
 		REQUIRE(q == q);
@@ -25,8 +26,10 @@ TEST_CASE( "operations", "[quaternion]" ) {
 		ssm::quat q;
 
 		q = ssm::quat(1.0f, 0.0f, 0.0f, 0.0f);
+		dq = ssm::dquat(1.0, 0.0, 0.0, 0.0);
 		REQUIRE(ssm::sqnorm(q) == 1.0f);
-		REQUIRE(ssm::norm(q) == 1.0f);
+		REQUIRE(ssm::sqnorm(dq) == 1.0);
+		REQUIRE(ssm::norm(dq) == 1.0);
 		q = ssm::quat(1.0f, 1.0f, 0.0f, 0.0f);
 		REQUIRE(epsilon_compare(ssm::sqnorm(q), 2.0f, 1e-6f));
 		REQUIRE(epsilon_compare(ssm::norm(q), std::sqrt(2.0f), 1e-6f));

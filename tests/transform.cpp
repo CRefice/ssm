@@ -51,4 +51,8 @@ TEST_CASE( "transformations", "[transform]" ) {
 		REQUIRE(epsilon_compare(vec_2.z, 8.0f, 1e-6f));
 		REQUIRE(epsilon_compare(vec_2.w, 1.0f, 1e-6f));
 	}
+
+	SECTION( "rotation" ) {
+		ssm::mat4 rot = ssm::rotation(ssm::unit_quat(0, 0, 0, 1));
+	}
 }

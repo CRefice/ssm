@@ -90,17 +90,17 @@ template <typename T>
 struct transform_impl<T, enable_if_t<simd::is_simd<T, 4>::value, void>>
 {
 static inline matrix<T, 4, 4> rotation(const unit_quaternion<T>& rot) {
-	const simd::vector<T, 4> wwww = simd::shuffle<3, 3, 3, 3>(rot.data);
+	const simd::vector<T, 4> wwww = simd::shuffle<3, 3, 3, 3>(rot.data, rot.data);
 	const simd::vector<T, 4> xyzw = rot.data;
-	const simd::vector<T, 4> zxyw = simd::shuffle<2, 0, 1, 3>(rot.data);
-	const simd::vector<T, 4> yzxw = simd::shuffle<1, 2, 0, 3>(rot.data);
+	const simd::vector<T, 4> zxyw = simd::shuffle<2, 0, 1, 3>(rot.data, rot.data);
+	const simd::vector<T, 4> yzxw = simd::shuffle<1, 2, 0, 3>(rot.data, rot.data);
 
 	const simd::vector<T, 4> xyzw2 = simd::add(xyzw, xyzw);
-	const simd::vector<T, 4> zxyw2 = simd::shuffle<2, 0, 1, 3>(xyzw2);
-	const simd::vector<T, 4> yzxw2 = simd::shuffle<1, 2, 0, 3>(xyzw2);
+	const simd::vector<T, 4> zxyw2 = simd::shuffle<2, 0, 1, 3>(xyzw2, xyzw2);
+	const simd::vector<T, 4> yzxw2 = simd::shuffle<1, 2, 0, 3>(xyzw2, xyzw2);
 
 	simd::vector<T, 4> wide1;
-	simd::fill(wide1, 1);
+	simd::fill(wide1, T(1));
 
 	simd::vector<T, 4> tmp0 = simd::sub(wide1, simd::mul(yzxw2, yzxw));
 	tmp0 = simd::sub(tmp0, simd::mul(zxyw2, zxyw));
@@ -112,12 +112,12 @@ static inline matrix<T, 4, 4> rotation(const unit_quaternion<T>& rot) {
 	tmp2 = simd::sub(tmp2, simd::mul(yzxw2, wwww));
 
 	matrix<T, 4, 4> ret = identity<T, 4>();
-	ret[0].data = simd::assign(simd::get_element<T, 4, 0>(tmp0),
-			simd::get_element<T, 4, 0>(tmp1), simd::get_element<T, 4, 0>(tmp2), 0);
-	ret[1].data = simd::assign(simd::get_element<T, 4, 1>(tmp2),
-			simd::get_element<T, 4, 1>(tmp0), simd::get_element<T, 4, 1>(tmp1), 0);
-	ret[2].data = simd::assign(simd::get_element<T, 4, 2>(tmp1),
-			simd::get_element<T, 4, 2>(tmp2), simd::get_element<T, 4, 2>(tmp0), 0);
+	simd::assign(ret[0].data, simd::get_element<T, 4, 0>(tmp0),
+			simd::get_element<T, 4, 0>(tmp1), simd::get_element<T, 4, 0>(tmp2), T(0));
+	simd::assign(ret[1].data, simd::get_element<T, 4, 1>(tmp2),
+			simd::get_element<T, 4, 1>(tmp0), simd::get_element<T, 4, 1>(tmp1), T(0));
+	simd::assign(ret[2].data, simd::get_element<T, 4, 2>(tmp1),
+			simd::get_element<T, 4, 2>(tmp2), simd::get_element<T, 4, 2>(tmp0), T(0));
 	return ret;
 }
 };
