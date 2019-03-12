@@ -19,6 +19,23 @@ struct quaternion : generic_vec<T, 4>
 	using generic_vec<T, 4>::generic_vec;
 };
 
+template <typename T>
+inline quaternion<T> euler(T yaw, T pitch, T roll) {
+	T cy = cos(yaw * 0.5);
+	T sy = sin(yaw * 0.5);
+	T cp = cos(pitch * 0.5);
+	T sp = sin(pitch * 0.5);
+	T cr = cos(roll * 0.5);
+	T sr = sin(roll * 0.5);
+
+	T w = cy * cp * cr + sy * sp * sr;
+	T x = cy * cp * sr - sy * sp * cr;
+	T y = sy * cp * sr + cy * sp * cr;
+	T z = sy * cp * cr - cy * sp * sr;
+
+	return quaternion<T>(x, y, z, w);
+}
+
 template <template <class> class A,
 				 template <class> class B,
 				 typename T>
