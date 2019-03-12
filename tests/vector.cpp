@@ -28,7 +28,7 @@ SSM_VEC_TEST_CASE("constructors") {
   }
 
   SECTION("one-argument constructor") {
-    T val = GENERATE(random(T(0), T(20)));
+    T val = GENERATE(take(10, random(T(0), T(20))));
 		CAPTURE(val);
     auto vec = TestType(val);
     for (std::size_t i = 0; i < TestType::size; ++i) {
@@ -37,8 +37,8 @@ SSM_VEC_TEST_CASE("constructors") {
   }
 
   SECTION("two-argument constructor") {
-    T x = GENERATE(random(T(0), T(5)));
-    T y = GENERATE(random(T(0), T(5)));
+    T x = GENERATE(take(10, random(T(0), T(5))));
+    T y = GENERATE(take(10, random(T(0), T(5))));
 		CAPTURE(x, y);
     auto vec = ssm::vector<T, 2>(x, y);
     REQUIRE(vec.x == x);
@@ -46,9 +46,9 @@ SSM_VEC_TEST_CASE("constructors") {
   }
 
   SECTION("three-argument constructor") {
-    T x = GENERATE(random(T(0), T(5)));
-    T y = GENERATE(random(T(0), T(5)));
-    T z = GENERATE(random(T(0), T(5)));
+    T x = GENERATE(take(10, random(T(0), T(5))));
+    T y = GENERATE(take(10, random(T(0), T(5))));
+    T z = GENERATE(take(10, random(T(0), T(5))));
 		CAPTURE(x, y, z);
     auto vec = ssm::vector<T, 3>(x, y, z);
     REQUIRE(vec.x == x);
@@ -57,10 +57,10 @@ SSM_VEC_TEST_CASE("constructors") {
   }
 
   SECTION("four-argument constructor") {
-    T x = GENERATE(random(T(0), T(5)));
-    T y = GENERATE(random(T(0), T(5)));
-    T z = GENERATE(random(T(0), T(5)));
-    T w = GENERATE(random(T(0), T(5)));
+    T x = GENERATE(take(10, random(T(0), T(5))));
+    T y = GENERATE(take(10, random(T(0), T(5))));
+    T z = GENERATE(take(10, random(T(0), T(5))));
+    T w = GENERATE(take(10, random(T(0), T(5))));
 		CAPTURE(x, y, z, w);
     auto vec = ssm::vector<T, 4>(x, y, z, w);
     REQUIRE(vec.x == x);
@@ -102,7 +102,7 @@ SSM_VEC_TEST_CASE("equality comparison") {
   using T = typename TestType::value_type;
   TestType def(T(0));
   REQUIRE(def == def);
-  T val = GENERATE(range(T(1), T(10)));
+  T val = GENERATE(take(10, random(T(1), T(10))));
 	CAPTURE(val);
   TestType vec(val);
   REQUIRE(def != vec);
@@ -121,7 +121,7 @@ SSM_VEC_FLOAT_TEST_CASE("vector operations") {
     TestType vec;
     REQUIRE(ssm::sqlength(vec) == T(0));
     REQUIRE(ssm::length(vec) == T(0));
-    T val = GENERATE(random(T(-100), T(100)));
+    T val = GENERATE(take(10, random(T(-100), T(100))));
 		CAPTURE(val);
     T exp_sq_length = T(0);
     for (std::size_t i = 0; i < TestType::size; ++i) {
@@ -135,8 +135,8 @@ SSM_VEC_FLOAT_TEST_CASE("vector operations") {
   SECTION("dot product") {
     TestType a, b;
     T exp_dot = T(0);
-    T x = GENERATE(random(T(-10), T(10)));
-    T y = GENERATE(random(T(-10), T(10)));
+    T x = GENERATE(take(10, random(T(-10), T(10))));
+    T y = GENERATE(take(10, random(T(-10), T(10))));
 		CAPTURE(x, y);
     for (std::size_t i = 0; i < TestType::size; ++i) {
       REQUIRE(ssm::dot(a, b) == Approx(exp_dot));
@@ -187,8 +187,8 @@ SSM_VEC_TEST_CASE("arithmetic operations") {
   SECTION("addition") {
     TestType a, b;
     REQUIRE(a + b == a);
-		T x = GENERATE(random(T(0), T(10)));
-		T y = GENERATE(random(T(0), T(10)));
+		T x = GENERATE(take(10, random(T(0), T(10))));
+		T y = GENERATE(take(10, random(T(0), T(10))));
     for (std::size_t i = 0; i < TestType::size; ++i) {
 			CAPTURE(x, y);
       a[i] = x;
@@ -204,7 +204,7 @@ SSM_VEC_TEST_CASE("arithmetic operations") {
   SECTION("negation") {
     TestType a;
     REQUIRE(a + (-a) == a - a);
-		T x = GENERATE(random(T(0), T(10)));
+		T x = GENERATE(take(10, random(T(0), T(10))));
     for (std::size_t i = 0; i < TestType::size; ++i) {
 			CAPTURE(x);
       a[i] = x;
@@ -215,8 +215,8 @@ SSM_VEC_TEST_CASE("arithmetic operations") {
   SECTION("subtraction") {
     TestType a, b;
     REQUIRE(a - b == a);
-		T x = GENERATE(random(T(0), T(10)));
-		T y = GENERATE(random(T(0), T(10)));
+		T x = GENERATE(take(10, random(T(0), T(10))));
+		T y = GENERATE(take(10, random(T(0), T(10))));
     for (std::size_t i = 0; i < TestType::size; ++i) {
 			CAPTURE(x, y);
       a[i] = x;
@@ -236,8 +236,8 @@ SSM_VEC_TEST_CASE("arithmetic operations") {
     REQUIRE(a * a == a);
     REQUIRE(a * b == a);
     REQUIRE(b * b == b);
-		T x = GENERATE(random(T(0), T(10)));
-		T y = GENERATE(random(T(0), T(10)));
+		T x = GENERATE(take(10, random(T(0), T(10))));
+		T y = GENERATE(take(10, random(T(0), T(10))));
     for (std::size_t i = 0; i < TestType::size; ++i) {
 			CAPTURE(x, y);
       a[i] = x;
@@ -255,8 +255,8 @@ SSM_VEC_TEST_CASE("arithmetic operations") {
     TestType b(T(1));
     REQUIRE(a / b == a);
     REQUIRE(b / b == b);
-		T x = GENERATE(random(T(1), T(10)));
-		T y = GENERATE(random(T(1), T(10)));
+		T x = GENERATE(take(10, random(T(1), T(10))));
+		T y = GENERATE(take(10, random(T(1), T(10))));
     for (std::size_t i = 0; i < TestType::size; ++i) {
 			CAPTURE(x, y);
       a[i] = x;
