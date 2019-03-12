@@ -109,7 +109,7 @@ inline d128 dot(d128 a, d128 b) {
 	return _mm_hadd_pd(mul1, mul1)
 #else
 	const d128 mul0 = mul(a, b);
-	const d128 swp0 = shuffle<1, 0>(mul0);
+	const d128 swp0 = shuffle<1, 0>(mul0, mul0);
 	return add(mul0, swp0);
 #endif
 }
