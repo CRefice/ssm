@@ -2,6 +2,7 @@
 
 #include "matrix.hpp"
 #include "quaternion.hpp"
+#include "unit.hpp"
 
 // Functions for transformations in any number of dimensions.
 
@@ -67,7 +68,7 @@ namespace detail
 template <typename T, typename = void>
 struct transform_impl
 {
-static inline matrix<T, 4, 4> rotation(const unit_quaternion<T>& rot) {
+static inline matrix<T, 4, 4> rotation(const quaternion<T>& rot) {
 	matrix<T, 4, 4> ret;
 
 	ret[0].x = 1 - 2 * rot.y * rot.y - 2 * rot.z * rot.z;
@@ -89,7 +90,7 @@ static inline matrix<T, 4, 4> rotation(const unit_quaternion<T>& rot) {
 template <typename T>
 struct transform_impl<T, enable_if_t<simd::is_simd<T, 4>::value, void>>
 {
-static inline matrix<T, 4, 4> rotation(const unit_quaternion<T>& rot) {
+static inline matrix<T, 4, 4> rotation(const quaternion<T>& rot) {
 	const simd::vector<T, 4> wwww = simd::shuffle<3, 3, 3, 3>(rot.data, rot.data);
 	const simd::vector<T, 4> xyzw = rot.data;
 	const simd::vector<T, 4> zxyw = simd::shuffle<2, 0, 1, 3>(rot.data, rot.data);
@@ -124,7 +125,7 @@ static inline matrix<T, 4, 4> rotation(const unit_quaternion<T>& rot) {
 }
 
 template <typename T>
-inline matrix<T, 4, 4> rotation(const unit_quaternion<T>& rot) {
+inline matrix<T, 4, 4> rotation(const unit<quaternion<T>>& rot) {
 	return detail::transform_impl<T>::rotation(rot);
 }
 
@@ -165,7 +166,7 @@ inline matrix<T, 4, 4> ortho(T width, T height, T near, T far) {
 }
 
 template <typename T>
-inline matrix<T, 4, 4> look_at(const vector<T, 3>& eye, const vector<T, 3>& target, const unit_vector<T, 3>& up) {
+inline matrix<T, 4, 4> look_at(const vector<T, 3>& eye, const vector<T, 3>& target, const unit<vector<T, 3>>& up) {
 	const auto z = normalize(eye - target);
 	const auto x = normalize(cross(up, z));
 	const auto y = cross(z, x);

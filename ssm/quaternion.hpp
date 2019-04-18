@@ -3,176 +3,144 @@
 #include "detail/setup.hpp"
 #include "detail/vector-manip.hpp"
 
-namespace ssm
-{
+namespace ssm {
 template <typename T>
-struct unit_quaternion : generic_vec<T, 4>
-{
-	using generic_vec<T, 4>::generic_vec;
-};
-
-template <typename T>
-struct quaternion : generic_vec<T, 4>
-{
-	quaternion<T>() = default;
-	quaternion<T>(const unit_quaternion<T>& u) : generic_vec<T, 4>(u.data) {}
-	using generic_vec<T, 4>::generic_vec;
+struct quaternion : generic_vec<T, 4> {
+  using generic_vec<T, 4>::generic_vec;
 };
 
 template <typename T>
 inline quaternion<T> euler(T yaw, T pitch, T roll) {
-	T cy = cos(yaw * 0.5);
-	T sy = sin(yaw * 0.5);
-	T cp = cos(pitch * 0.5);
-	T sp = sin(pitch * 0.5);
-	T cr = cos(roll * 0.5);
-	T sr = sin(roll * 0.5);
+  T cy = cos(yaw * 0.5);
+  T sy = sin(yaw * 0.5);
+  T cp = cos(pitch * 0.5);
+  T sp = sin(pitch * 0.5);
+  T cr = cos(roll * 0.5);
+  T sr = sin(roll * 0.5);
 
-	T w = cy * cp * cr + sy * sp * sr;
-	T x = cy * cp * sr - sy * sp * cr;
-	T y = sy * cp * sr + cy * sp * cr;
-	T z = sy * cp * cr - cy * sp * sr;
+  T w = cy * cp * cr + sy * sp * sr;
+  T x = cy * cp * sr - sy * sp * cr;
+  T y = sy * cp * sr + cy * sp * cr;
+  T z = sy * cp * cr - cy * sp * sr;
 
-	return quaternion<T>(x, y, z, w);
-}
-
-template <template <class> class A,
-				 template <class> class B,
-				 typename T>
-inline T dot(const A<T>& a, const B<T>& b) {
-	return detail::vec_impl<T, 4>::dot(a, b);
-}
-
-template <template <class> class Quat, typename T>
-inline T sqnorm(const Quat<T>& quat) {
-	return dot(quat, quat);
-}
-
-template <template <class> class Quat, typename T>
-inline T norm(const Quat<T>& quat) {
-	return static_cast<T>(std::sqrt(sqnorm(quat)));
-}
-
-template <template <class> class Quat, typename T>
-inline Quat<T> conjugate(Quat<T> quat) {
-	detail::vec_impl<T, 4>::quat_conjugate(quat);
-	return quat;
+  return quaternion<T>(x, y, z, w);
 }
 
 template <typename T>
-inline quaternion<T> inverse(quaternion<T> quat) {
-	detail::vec_impl<T, 4>::quat_conjugate(quat);
-	return quat / sqnorm(quat);
+inline T dot(const quaternion<T>& a, const quaternion<T>& b) {
+  return detail::vec_impl<T, 4>::dot(a, b);
+}
+
+template <typename T>
+inline T sqnorm(const quaternion<T>& q) {
+  return dot(q, q);
+}
+
+template <typename T>
+inline T norm(const quaternion<T>& q) {
+  return static_cast<T>(std::sqrt(sqnorm(q)));
+}
+
+template <typename T>
+inline quaternion<T> conjugate(quaternion<T> q) {
+  detail::vec_impl<T, 4>::quat_conjugate(q);
+  return q;
+}
+
+template <typename T>
+inline quaternion<T> inverse(quaternion<T> q) {
+  detail::vec_impl<T, 4>::quat_conjugate(q);
+  return q / sqnorm(q);
 }
 
 // Specific form for unit quaternions, since it's much simpler
+/*
 template <typename T>
-inline unit_quaternion<T> inverse(unit_quaternion<T> quat) {
-	return conjugate(quat);
+inline unit_quaternion<T> inverse(unit_quaternion<T> q) {
+  return conjugate(q);
+}
+*/
+
+template <typename T>
+inline quaternion<T> normalize(quaternion<T> q) {
+  detail::vec_impl<T, 4>::normalize(q);
+  return q;
 }
 
-template <template <class> class Quat, typename T>
-inline unit_quaternion<T> normalize(const Quat<T>& quat) {
-	unit_quaternion<T> norm(quat.data);
-	detail::vec_impl<T, 4>::normalize(norm);
-	return norm;
+template <typename T>
+inline quaternion<T>& operator+=(quaternion<T>& a, const quaternion<T>& b) {
+  detail::vec_impl<T, 4>::add(a, b);
+  return a;
 }
 
-template <template <class> class Quat,
-				 typename T>
-inline quaternion<T>& operator+=(quaternion<T>& a, const Quat<T>& b) {
-	detail::vec_impl<T, 4>::add(a, b);
-	return a;
+template <typename T>
+inline quaternion<T>& operator-=(quaternion<T>& a, const quaternion<T>& b) {
+  detail::vec_impl<T, 4>::sub(a, b);
+  return a;
 }
 
-template <template <class> class Quat,
-				 typename T>
-inline quaternion<T>& operator-=(quaternion<T>& a, const Quat<T>& b) {
-	detail::vec_impl<T, 4>::sub(a, b);
-	return a;
-}
-
-template <template <class> class Quat,
-				 typename T>
-inline quaternion<T>& operator*=(quaternion<T>& a, const Quat<T>& b) {
-	detail::vec_impl<T, 4>::quat_mul(a, b);
-	return a;
+template <typename T>
+inline quaternion<T>& operator*=(quaternion<T>& a, const quaternion<T>& b) {
+  detail::vec_impl<T, 4>::quat_mul(a, b);
+  return a;
 }
 
 template <typename T>
 inline quaternion<T>& operator*=(quaternion<T>& a, T b) {
-	detail::vec_impl<T, 4>::mul(a, b);
-	return a;
+  detail::vec_impl<T, 4>::mul(a, b);
+  return a;
 }
 
 template <typename T>
 inline quaternion<T>& operator/=(quaternion<T>& a, T b) {
-	detail::vec_impl<T, 4>::div(a, b);
-	return a;
+  detail::vec_impl<T, 4>::div(a, b);
+  return a;
 }
 
-template <template <class> class A,
-				 template <class> class B,
-				 typename T>
-inline quaternion<T> operator+(const A<T>& a, const B<T>& b) {
-	quaternion<T> ret(a);
-	return ret += b;
+template <typename T>
+inline quaternion<T> operator+(quaternion<T> a, const quaternion<T>& b) {
+  return a += b;
 }
 
-template <template <class> class A,
-				 template <class> class B,
-				 typename T>
-inline quaternion<T> operator-(const A<T>& a, const B<T>& b) {
-	quaternion<T> ret(a);
-	return ret -= b;
+template <typename T>
+inline quaternion<T> operator-(quaternion<T> a, const quaternion<T>& b) {
+  return a -= b;
 }
 
-template <template <class> class A,
-				 template <class> class B,
-				 typename T>
-inline quaternion<T> operator*(const A<T>& a, const B<T>& b) {
-	quaternion<T> ret(a);
-	return ret *= b;
+template <typename T>
+inline quaternion<T> operator*(quaternion<T> a, const quaternion<T>& b) {
+  return a *= b;
 }
 
-template <template <class> class A,
-	typename T>
-inline quaternion<T> operator*(const A<T>& a, T b) {
-	quaternion<T> ret(a);
-	return ret *= b;
+template <typename T>
+inline quaternion<T> operator*(quaternion<T> a, T b) {
+  return a *= b;
 }
 
-template <template <class> class A,
-	typename T>
-inline quaternion<T> operator*(T a, const A<T>& b) {
-	return b * a;
+template <typename T>
+inline quaternion<T> operator*(T a, const quaternion<T>& b) {
+  return b * a;
 }
 
-template <template <class> class A,
-	typename T>
-inline quaternion<T> operator/(const A<T>& a, T b) {
-	quaternion<T> ret(a);
-	return ret /= b;
+template <typename T>
+inline quaternion<T> operator/(quaternion<T> a, T b) {
+  return a /= b;
 }
 
-template <template <class> class Quat, typename T>
-inline Quat<T> operator-(Quat<T> quat) {
-	detail::vec_impl<T, 4>::negate(quat);
-	return quat;
+template <typename T>
+inline quaternion<T> operator-(quaternion<T> q) {
+  detail::vec_impl<T, 4>::negate(q);
+  return q;
 }
 
-template <template <class> class A,
-				 template <class> class B,
-				 typename T>
-inline bool operator==(const A<T>& a, const B<T>& b) {
-	return detail::vec_impl<T, 4>::equals(a, b);
+template <typename T>
+inline bool operator==(const quaternion<T>& a, const quaternion<T>& b) {
+  return detail::vec_impl<T, 4>::equals(a, b);
 }
 
-template <template <class> class A,
-	template <class> class B,
-	typename T>
-	inline bool operator!=(const A<T>& a, const B<T>& b) {
-	return !(a == b);
+template <typename T>
+inline bool operator!=(const quaternion<T>& a, const quaternion<T>& b) {
+  return !(a == b);
 }
 
 //----------------------------------------------
@@ -180,7 +148,4 @@ template <template <class> class A,
 //----------------------------------------------
 using quat = quaternion<float>;
 using dquat = quaternion<double>;
-
-using unit_quat = unit_quaternion<float>;
-using unit_dquat = unit_quaternion<double>;
-}
+} // namespace ssm
