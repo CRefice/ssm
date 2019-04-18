@@ -53,6 +53,6 @@ TEST_CASE( "transformations", "[transform]" ) {
 	}
 
 	SECTION( "rotation" ) {
-		ssm::mat4 rot = ssm::rotation(ssm::unit_quat(0, 0, 0, 1));
+		ssm::mat4 rot = ssm::rotation(ssm::unit<ssm::quat>(ssm::quat(0, 0, 0, 1)));
 	}
 }
