@@ -4,10 +4,12 @@
 #include "vector.hpp"
 
 namespace ssm {
-template <typename T, std::size_t M, std::size_t N>
+template <typename T, std::size_t M, std::size_t N = M>
 class matrix {
 public:
-  using value_type = vector<T, M>;
+  using column_type = vector<T, M>;
+  static constexpr std::size_t height = M;
+  static constexpr std::size_t width = N;
 
   matrix() = default;
 
@@ -16,26 +18,31 @@ public:
       data[i] = vector<T, M>(val);
   }
 
-  value_type& operator[](std::size_t index) {
+  column_type& operator[](std::size_t index) {
     assert(index < N);
     return data[index];
   }
-  const value_type& operator[](std::size_t index) const {
+  const column_type& operator[](std::size_t index) const {
     assert(index < N);
     return data[index];
   }
 
   template <std::size_t I>
-  value_type get() const {
+  column_type get() const {
     return data[I];
   }
   template <std::size_t I>
-  void set(const value_type& vec) {
+  void set(const column_type& vec) {
     data[I] = vec;
   }
 
+  T* begin() { return data[0].begin(); }
+  const T* begin() const { return data[0].begin(); }
+  T* end() { return data[N - 1].end(); }
+  const T* end() const { return data[N - 1].end(); }
+
 private:
-  std::array<value_type, N> data = {};
+  std::array<column_type, N> data = {};
 };
 
 template <typename T, std::size_t M, std::size_t N>

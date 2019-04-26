@@ -60,6 +60,11 @@ struct generic_vec : simd::vector_data<T, N> {
     assert(index < N);
     return *(data_ptr(*this) + index);
   }
+
+  T* begin() { return data_ptr(*this); }
+  const T* begin() const { return data_ptr(*this); }
+  T* end() { return begin() + N; }
+  const T* end() const { return begin() + N; }
 };
 
 // Data-accessing functions
@@ -67,25 +72,9 @@ template <typename T, std::size_t N>
 T* data_ptr(generic_vec<T, N>& vec) {
   return reinterpret_cast<T*>(&(vec.data));
 }
-template <typename T, std::size_t N>
-T* begin(generic_vec<T, N>& vec) {
-  return data_ptr(vec);
-}
-template <typename T, std::size_t N>
-T* end(generic_vec<T, N>& vec) {
-  return data_ptr(vec) + N;
-}
 
 template <typename T, std::size_t N>
 const T* data_ptr(const generic_vec<T, N>& vec) {
   return reinterpret_cast<const T*>(&(vec.data));
-}
-template <typename T, std::size_t N>
-const T* begin(const generic_vec<T, N>& vec) {
-  return data_ptr(vec);
-}
-template <typename T, std::size_t N>
-const T* end(const generic_vec<T, N>& vec) {
-  return data_ptr(vec) + N;
 }
 } // namespace ssm

@@ -22,7 +22,7 @@ struct unroll
 	using next = unroll<Start + 1, End>;
 
 	template <typename Vec, typename Mat>
-	inline static typename Mat::value_type inner_product(Vec& vec, const Mat& mat) {
+	inline static typename Mat::column_type inner_product(Vec& vec, const Mat& mat) {
 		return mat[Start] * vec.template get<Start>()
 			+ next::inner_product(vec, mat);
 	}
@@ -61,7 +61,7 @@ struct unroll
 
 	template <typename Mat>
 	inline static void identity_mat(Mat& out_mat) {
-		out_mat[Start] = unroll<0, End>::template identity_vec<typename Mat::value_type, Start>();
+		out_mat[Start] = unroll<0, End>::template identity_vec<typename Mat::column_type, Start>();
 		next::identity_mat(out_mat);
 	}
 
@@ -81,7 +81,7 @@ template <std::size_t End>
 struct unroll<End, End>
 {
 	template <typename Vec, typename Mat>
-	static inline typename Mat::value_type inner_product(Vec& vec, const Mat& mat) { return {}; }
+	static inline typename Mat::column_type inner_product(Vec& vec, const Mat& mat) { return {}; }
 
 	// Generates the I'th vector of an identity matrix.
 	template <typename Vec, std::size_t I, typename... Args>

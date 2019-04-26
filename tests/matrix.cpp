@@ -2,121 +2,180 @@
 
 #include <ssm/matrix.hpp>
 
-bool epsilon_compare(float a, float b, float epsilon) {
-	return std::abs(a - b) < epsilon;
+template <typename T>
+using tmat1 = ssm::matrix<T, 1>;
+template <typename T>
+using tmat2 = ssm::matrix<T, 2>;
+template <typename T>
+using tmat3 = ssm::matrix<T, 3>;
+template <typename T>
+using tmat4 = ssm::matrix<T, 4>;
+template <typename T>
+using tmat1x4 = ssm::matrix<T, 1, 4>;
+template <typename T>
+using tmat4x1 = ssm::matrix<T, 4, 1>;
+template <typename T>
+using tmat2x3 = ssm::matrix<T, 2, 3>;
+template <typename T>
+using tmat3x2 = ssm::matrix<T, 3, 2>;
+
+TEMPLATE_PRODUCT_TEST_CASE("constructors", "[template][product]",
+                           (tmat1, tmat2, tmat3, tmat4, tmat1x4, tmat4x1,
+                            tmat2x3, tmat3x2),
+                           (float, double, int, unsigned)) {
+  using VecType = typename TestType::column_type;
+  using T = typename VecType::value_type;
+
+  SECTION("default constructor") {
+    TestType mat;
+    for (auto elem : mat) {
+      REQUIRE(elem == T(0));
+    }
+  }
+
+  SECTION("one-argument constructor") {
+    T val = GENERATE(take(10, random(T(0), T(20))));
+    auto mat = TestType(val);
+    for (auto elem : mat) {
+      REQUIRE(elem == val);
+    }
+  }
 }
 
-bool epsilon_compare(const ssm::mat4& a, const ssm::mat4& b, float epsilon) {
-	for (int i = 0; i < 4; ++i) {
-		for (int j = 0; j < 4; ++j) {
-			if (!epsilon_compare(a[i][j], b[i][j], epsilon))
-				return false;
-		}
-	}
-	return true;
+TEMPLATE_PRODUCT_TEST_CASE("equality comparisons", "[template][product]",
+                           (tmat1, tmat2, tmat3, tmat4, tmat1x4, tmat4x1,
+                            tmat2x3, tmat3x2),
+                           (float, double, int, unsigned)) {
+  using VecType = typename TestType::column_type;
+  using T = typename VecType::value_type;
+
+  TestType def(T(0));
+  REQUIRE(def == def);
+  T val = GENERATE(take(10, random(T(1), T(10))));
+  TestType mat(val);
+  REQUIRE(def != mat);
+  REQUIRE(mat == mat);
+
+  def = mat;
+  REQUIRE(def == mat);
+  mat[0] = VecType(T(0));
+  REQUIRE(def != mat);
 }
 
-TEST_CASE("matrix constructors", "[matrix]") {
-	ssm::mat4 mat;
+TEMPLATE_PRODUCT_TEST_CASE("matrix operations", "[template][product]",
+                           (tmat1, tmat2, tmat3, tmat4, tmat1x4, tmat4x1,
+                            tmat2x3, tmat3x2),
+                           (float, double, int, unsigned)) {
+  using VecType = typename TestType::column_type;
+  using T = typename VecType::value_type;
 
-	SECTION("default constructor") {
-		for (int i = 0; i < 4; ++i) {
-			for (int j = 0; i < 4; ++i)
-				REQUIRE(mat[i][j] == 0.0f);
-		}
-	}
+  SECTION("addition") {
+    TestType a(T(0)), b(T(0));
+    REQUIRE(a + b == a);
+    T x = GENERATE(take(10, random(T(0), T(10))));
+    T y = GENERATE(take(10, random(T(0), T(10))));
+    for (std::size_t i = 0; i < TestType::width; ++i) {
+      for (std::size_t j = 0; j < TestType::height; ++j) {
+        a[i][j] = x;
+        b[i][j] = y;
+        REQUIRE((a + b)[i][j] == x + y);
+      }
+    }
+    REQUIRE(a + b == b + a);
+    auto c = a;
+    c += b;
+    REQUIRE(c == a + b);
+  }
 
-	SECTION("one-argument constructor") {
-		mat = ssm::mat4(5.0f);
-		for (int i = 0; i < 4; ++i) {
-			for (int j = 0; i < 4; ++i)
-				REQUIRE(mat[i][j] == 5.0f);
-		}
-	}
+  SECTION("negation") {
+    TestType a;
+    REQUIRE(a + (-a) == a - a);
+    T x = GENERATE(take(10, random(T(0), T(10))));
+    for (std::size_t i = 0; i < TestType::width; ++i) {
+      for (std::size_t j = 0; j < TestType::height; ++j) {
+        a[i][j] = x;
+        REQUIRE((-a)[i][j] == -x);
+      }
+    }
+  }
+
+  SECTION("subtraction") {
+    TestType a, b;
+    REQUIRE(a - b == a);
+    T x = GENERATE(take(10, random(T(0), T(10))));
+    T y = GENERATE(take(10, random(T(0), T(10))));
+    for (std::size_t i = 0; i < TestType::width; ++i) {
+      for (std::size_t j = 0; j < TestType::height; ++j) {
+        a[i][j] = x;
+        b[i][j] = y;
+        REQUIRE((a - b)[i][j] == x - y);
+      }
+    }
+    REQUIRE(a - a == TestType(T(0)));
+    REQUIRE(a - b == -(b - a));
+    auto c = a;
+    c -= b;
+    REQUIRE(c == a - b);
+  }
+
+  SECTION("division") {
+    T val = GENERATE(take(10, random(T(1), T(10))));
+    TestType a(val);
+    T div = GENERATE(take(10, random(T(1), T(10))));
+    REQUIRE(a / div == TestType(T(val / div)));
+    REQUIRE(a / val == TestType(T(1)));
+    auto c = a;
+    c /= div;
+    REQUIRE(c == a / div);
+  }
 }
 
-TEST_CASE("equality comparisons", "[matrix]") {
-	ssm::mat4 mat_1(1.0f);
-	ssm::mat4 mat_2(2.0f);
+TEMPLATE_PRODUCT_TEST_CASE("matrix multiplication", "[template][product]",
+                           (tmat4), (float, double, int, unsigned)) {
+  using VecType = typename TestType::column_type;
+  using T = typename VecType::value_type;
 
-	REQUIRE(mat_1 == mat_1);
-	REQUIRE(mat_2 == mat_2);
-	REQUIRE(mat_1 != mat_2);
-	mat_2 = mat_1;
-	REQUIRE(mat_1 == mat_2);
-	mat_2[2][2] = 10.0f;
-	REQUIRE(mat_1 != mat_2);
-}
+  TestType mat;
+  mat[0] = {T(1), T(0), T(0), T(0)};
+  mat[1] = {T(0), T(1), T(0), T(0)};
+  mat[2] = {T(0), T(0), T(1), T(0)};
+  mat[3] = {T(0), T(0), T(0), T(1)};
 
-TEST_CASE("operations", "[matrix]") {
-	ssm::mat4 mat(3.0f);
+  VecType vec(T(1), T(2), T(3), T(4));
+  REQUIRE((vec * mat) == (mat * vec));
+  auto vec_2 = vec;
+  vec_2 *= mat;
+  REQUIRE(vec_2 == mat * vec);
+  REQUIRE(vec_2 == vec);
 
-	SECTION("arithmetic operators") {
-		ssm::mat4 mat_2(7.0f);
+  mat = TestType(T(2));
+  vec_2 = vec;
+  vec_2 *= mat;
+  REQUIRE(vec_2 == mat * vec);
+  REQUIRE(vec_2.x == Approx(20.0f));
+  REQUIRE(vec_2.y == Approx(20.0f));
+  REQUIRE(vec_2.z == Approx(20.0f));
+  REQUIRE(vec_2.w == Approx(20.0f));
 
-		REQUIRE(mat + mat_2 == mat_2 + mat);
-		auto mat_3 = mat;
-		mat_3 += mat_2;
-		REQUIRE(mat_3 == mat + mat_2);
-		REQUIRE(mat_3 == ssm::mat4(3.0f + 7.0f));
+  TestType mat_2;
+  mat_2[0] = {T(1), T(2), T(3), T(4)};
+  mat_2[1] = {T(5), T(6), T(7), T(8)};
+  mat_2[2] = {T(9), T(10), T(11), T(12)};
+  mat_2[3] = {T(13), T(14), T(15), T(16)};
 
-		mat_3 = mat;
-		mat_3 -= mat_2;
-		REQUIRE(mat_3 == mat - mat_2);
-		REQUIRE(mat_3 == ssm::mat4(3.0f - 7.0f));
+  REQUIRE(mat * mat_2 != mat_2 * mat);
+  auto mat_3 = mat_2;
+  mat_3 *= mat;
+  REQUIRE(mat_3 == mat_2 * mat);
 
-		REQUIRE(mat * 3.0f == 3.0f * mat);
-		mat_3 = mat;
-		mat_3 *= 3.0f;
-		REQUIRE(mat_3 == mat * 3.0f);
-
-		mat_3 = mat;
-		mat_3 /= 3.0f;
-		REQUIRE(mat_3 == mat / 3.0f);
-
-		mat_3 = -mat;
-		REQUIRE(mat_3 == ssm::mat4(-3.0f));
-	}
-
-	SECTION("multiplication") {
-		mat[0] = { 1.0f, 0.0f, 0.0f, 0.0f };
-		mat[1] = { 0.0f, 1.0f, 0.0f, 0.0f };
-		mat[2] = { 0.0f, 0.0f, 1.0f, 0.0f };
-		mat[3] = { 0.0f, 0.0f, 0.0f, 1.0f };
-
-		ssm::vec4 vec(1.0f, 2.0f, 3.0f, 4.0f);
-		REQUIRE((vec * mat) == (mat * vec));
-		auto vec_2 = vec;
-		vec_2 *= mat;
-		REQUIRE(vec_2 == mat * vec);
-		REQUIRE(vec_2 == vec);
-
-		mat = ssm::mat4(2.0f);
-		vec_2 = vec;
-		vec_2 *= mat;
-		REQUIRE(vec_2 == mat * vec);
-		REQUIRE(epsilon_compare(vec_2.x, 20.0f, 1e-6f));
-		REQUIRE(epsilon_compare(vec_2.y, 20.0f, 1e-6f));
-		REQUIRE(epsilon_compare(vec_2.z, 20.0f, 1e-6f));
-		REQUIRE(epsilon_compare(vec_2.w, 20.0f, 1e-6f));
-
-		ssm::mat4 mat_2;
-		mat_2[0] = { 1.0f, 2.0f, 3.0f, 4.0f };
-		mat_2[1] = { 5.0f, 6.0f, 7.0f, 8.0f };
-		mat_2[2] = { 9.0f, 10.0f, 11.0f, 12.0f };
-		mat_2[3] = { 13.0f, 14.0f, 15.0f, 16.0f };
-
-		REQUIRE(mat * mat_2 != mat_2 * mat);
-		auto mat_3 = mat_2;
-		mat_3 *= mat;
-		REQUIRE(mat_3 == mat_2 * mat);
-
-		ssm::mat4 result;
-		result[0] = { 56.0f, 64.0f, 72.0f, 80.0f };
-		result[1] = { 56.0f, 64.0f, 72.0f, 80.0f };
-		result[2] = { 56.0f, 64.0f, 72.0f, 80.0f };
-		result[3] = { 56.0f, 64.0f, 72.0f, 80.0f };
-
-		REQUIRE(epsilon_compare(mat_3, result, 1e-6f));
-	}
+  TestType result;
+  result[0] = {T(56), T(64), T(72), T(80)};
+  result[1] = {T(56), T(64), T(72), T(80)};
+  result[2] = {T(56), T(64), T(72), T(80)};
+  result[3] = {T(56), T(64), T(72), T(80)};
+  for (int i = 0; i < 4; ++i) {
+    for (int j = 0; j < 4; ++j) {
+      REQUIRE(mat_3[i][j] == Approx(result[i][j]));
+    }
+  }
 }
