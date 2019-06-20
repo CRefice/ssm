@@ -6,6 +6,8 @@
 #include "../simd/access.hpp"
 #include "../simd/types.hpp"
 
+#include "loop-unroll.hpp"
+
 namespace ssm {
 // Forward declarations, useful since array operator has to be a member
 template <typename T, std::size_t N>
@@ -31,9 +33,20 @@ struct generic_vec : simd::vector_data<T, N> {
   // Initialize the vector all at once.
   generic_vec(simd::vector<T, N> vec) { this->data = vec; }
 
+  // Convert the given vector
+  template <typename OldT, typename std::enable_if<std::is_convertible<
+                               OldT, T>::value>::type* = nullptr>
+  explicit generic_vec(const generic_vec<OldT, N>& vec) {
+    *this = detail::unroll<0, N>::template convert_vec<generic_vec<OldT, N>,
+                                                       generic_vec<T, N>>(vec);
+  }
+
   // Initialize each element to one variadic argument,
   // in the given order.
-  template <typename... Args>
+  template <
+      typename... Args,
+      typename ssm::fst_t<void, typename std::enable_if<std::is_convertible<
+                                    Args, T>::value>::type...>* = nullptr>
   generic_vec(Args... args) {
     static_assert(
         sizeof...(args) == N,

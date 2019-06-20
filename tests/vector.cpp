@@ -66,32 +66,34 @@ TEMPLATE_PRODUCT_TEST_CASE("constructors", "[template][product]",
   }
 }
 
-TEST_CASE("member getters-setters", "ssm::vec4") {
-  ssm::vec4 vec(1.0f, 2.0f, 3.0f, 4.0f);
-  REQUIRE(vec.x == 1.0f);
-  REQUIRE(vec.y == 2.0f);
-  REQUIRE(vec.z == 3.0f);
-  REQUIRE(vec.w == 4.0f);
+TEMPLATE_TEST_CASE("member getters-setters", "[template]", ssm::vec4, ssm::dvec4, ssm::ivec4, ssm::uvec4) {
+	using T = typename TestType::value_type;
+
+  TestType vec(T(1), T(2), T(3), T(4));
+  REQUIRE(vec.x == T(1));
+  REQUIRE(vec.y == T(2));
+  REQUIRE(vec.z == T(3));
+  REQUIRE(vec.w == T(4));
   vec.x = vec.y;
-  REQUIRE(vec.x == 2.0f);
-  REQUIRE(vec.y == 2.0f);
+  REQUIRE(vec.x == T(2));
+  REQUIRE(vec.y == T(2));
   vec.z = vec.w;
-  REQUIRE(vec.z == 4.0f);
-  REQUIRE(vec.w == 4.0f);
-  vec.x = 5.0f;
-  vec.y = 6.0f;
-  vec.z = 7.0f;
-  vec.w = 8.0f;
-  REQUIRE(vec.x == 5.0f);
-  REQUIRE(vec.y == 6.0f);
-  REQUIRE(vec.z == 7.0f);
-  REQUIRE(vec.w == 8.0f);
-  ssm::vec4 vec_2(1.0f, 2.0f, 3.0f, 4.0f);
-  vec.x = (float)vec_2.x;
-  REQUIRE(vec.x == 1.0f);
-  REQUIRE(vec.y == 6.0f);
-  REQUIRE(vec.z == 7.0f);
-  REQUIRE(vec.w == 8.0f);
+  REQUIRE(vec.z == T(4));
+  REQUIRE(vec.w == T(4));
+  vec.x = T(5);
+  vec.y = T(6);
+  vec.z = T(7);
+  vec.w = T(8);
+  REQUIRE(vec.x == T(5));
+  REQUIRE(vec.y == T(6));
+  REQUIRE(vec.z == T(7));
+  REQUIRE(vec.w == T(8));
+  TestType vec_2(T(1), T(2), T(3), T(4));
+  vec.x = (T)vec_2.x;
+  REQUIRE(vec.x == T(1));
+  REQUIRE(vec.y == T(6));
+  REQUIRE(vec.z == T(7));
+  REQUIRE(vec.w == T(8));
 }
 
 TEMPLATE_PRODUCT_TEST_CASE("equality comparisons", "[template][product]",
@@ -263,4 +265,14 @@ TEMPLATE_PRODUCT_TEST_CASE("arithmetic operations", "[template][product]",
     c /= b;
     REQUIRE(c == a / b);
   }
+}
+
+TEMPLATE_PRODUCT_TEST_CASE("vector conversions", "[template][product]",
+                           (tvec1, tvec2, tvec3, tvec4, tvec5, tvec10),
+                           (float, double)) {
+	using T = typename TestType::value_type;
+	using CvtType = ssm::vector<int, TestType::size>;
+
+	TestType vec(T(1.5));
+	REQUIRE((CvtType)vec == CvtType(1));
 }

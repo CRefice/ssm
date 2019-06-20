@@ -19,4 +19,7 @@ namespace simd
 template<typename T, int N>
 struct is_simd { static constexpr bool value = false; };
 }
+
+template <typename T, typename... Args>
+using fst_t = T;
 }
