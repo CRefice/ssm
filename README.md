@@ -2,10 +2,11 @@
 
 SSM is an easy-to-use, header-only vector math library targeted primarily to game development and quick applications.
 It features:
-* Generic types for vectors, matrices and quaternions of any size and type.
-* SIMD speedups for available sizes and types. (E.g. vec4f, vec2d)
-* Vector and quaternion normalization taken care of by the type system (see below for details).
-* A similar language structure to GSL, for easy porting of programs.
+
+- Generic types for vectors, matrices and quaternions of any size and type.
+- SIMD speedups for available sizes and types. (E.g. vec4f, vec2d)
+- Vector and quaternion normalization taken care of by the type system (see below for details).
+- A similar language structure to GSL, for easy porting of programs.
 
 ## Getting Started
 
@@ -13,15 +14,15 @@ Clone this repo in your project's external dependencies folder, and add the proj
 If you use CMake, you can add `ssm` as a library to your target instead, which will automatically take care of include folders.
 
 ## Example usage
+
 See the wiki for more details.
-```
+
+```cpp
 // Template vector declaration
 ssm::vector<float, 3> vec3(1.0f, 2.0f, 3.0f);
 
 // Utility typedefs for common types
 ssm::vec4 vec; //vec is ssm::vector<float, 4>
-
-
 ```
 
 ## Testing
@@ -30,7 +31,7 @@ This project uses catch2 and CTest for testing. To run the tests, generate the t
 
 ## Authors
 
-* **Carlo Refice** - [CRefice](https://github.com/CRefice)
+- **Carlo Refice** - [CRefice](https://github.com/CRefice)
 
 ## License
 
